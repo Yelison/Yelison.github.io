@@ -50,4 +50,17 @@ test.describe('portfolio page', () => {
     await expect(page.locator('#timeline .timeline-row')).toHaveCount(5);
     await expect(page.locator('#timeline .timeline-row').first()).toBeVisible();
   });
+
+  test('opens and closes a project demo', async ({ page }) => {
+    await page.goto('/portfolio.html');
+    await page.getByRole('button', { name: 'Try project' }).first().click();
+    const dialog = page.locator('#silabin-demo');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator('iframe')).toHaveAttribute('src', /^https:\/\//);
+    await dialog.getByRole('button', { name: 'Expand' }).click();
+    await expect(dialog).toHaveClass(/expanded/);
+    await dialog.getByRole('button', { name: 'Close' }).click();
+    await expect(dialog).toBeHidden();
+    await expect(dialog.locator('iframe')).toHaveCount(0);
+  });
 });
