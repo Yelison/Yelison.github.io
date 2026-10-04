@@ -124,6 +124,63 @@ function paintDissolve(track, elapsed) {
   track.el.style.webkitMaskImage = mask;
 }
 
+const SCROLL_KEYS = new Set([
+  ' ',
+  'PageUp',
+  'PageDown',
+  'Home',
+  'End',
+  'ArrowUp',
+  'ArrowDown',
+  'ArrowLeft',
+  'ArrowRight',
+]);
+
+/** Keeps the page where it is while it is taken apart, so no intact section scrolls into view. */
+function lockScroll(win) {
+  const top = win.scrollY;
+  const left = win.scrollX;
+  const block = (event) => event.preventDefault();
+  win.addEventListener('wheel', block, { passive: false, capture: true });
+  win.addEventListener('touchmove', block, { passive: false, capture: true });
+  win.addEventListener('keydown', (event) => SCROLL_KEYS.has(event.key) && event.preventDefault(), {
+    capture: true,
+  });
+  // Anything else that still moves the page (dragging the scrollbar, autoscroll) is undone.
+  win.addEventListener('scroll', () => {
+    if (win.scrollY !== top || win.scrollX !== left)
+      win.scrollTo({ top, left, behavior: 'instant' });
+  });
+}
+
+const SCROLLBAR_FADE = { start: 3500, end: 4500 };
+
+/**
+ * The scrollbar is destroyed with the last piece of the page: its colors flicker
+ * and fade out in 40ms steps, like the dissolving cells.
+ */
+function createScrollbarFade(win, doc) {
+  const colors = win.getComputedStyle(doc.documentElement).scrollbarColor?.match(/rgba?\([^)]*\)/g);
+  if (!colors || colors.length < 2) return () => {};
+  const [thumb, track] = colors.map((color) =>
+    color
+      .match(/[\d.]+/g)
+      .slice(0, 3)
+      .join(','),
+  );
+  let lastStep = -1;
+  return function paint(elapsed) {
+    const step = Math.floor(elapsed / 40);
+    if (step === lastStep || elapsed < SCROLLBAR_FADE.start) return;
+    lastStep = step;
+    const fade =
+      1 -
+      Math.min(1, (elapsed - SCROLLBAR_FADE.start) / (SCROLLBAR_FADE.end - SCROLLBAR_FADE.start));
+    const alpha = (fade * (0.55 + 0.45 * Math.random())).toFixed(2);
+    doc.documentElement.style.scrollbarColor = `rgba(${thumb},${alpha}) rgba(${track},${alpha})`;
+  };
+}
+
 function terminalStep(elapsed) {
   const steps = text('destroySteps');
   if (elapsed < 1100) return steps[0];
@@ -136,6 +193,7 @@ function terminalStep(elapsed) {
 async function animateDestruction(frame, doc) {
   doc.documentElement.style.pointerEvents = 'none';
   const win = frame.contentWindow;
+  lockScroll(win);
   doc.documentElement.classList.add('motion-paused');
   win.dispatchEvent(new win.CustomEvent(MOTION_EVENT, { detail: { paused: true } }));
   // Bring the page background to the launch screen color during the destruction.
@@ -175,12 +233,14 @@ async function animateDestruction(frame, doc) {
   const erased = win.CSS?.highlights && win.Highlight ? new win.Highlight() : null;
   if (erased) win.CSS.highlights.set('destroy-erased', erased);
   const tracks = createDissolveTracks(pieces);
+  const paintScrollbar = createScrollbarFade(win, doc);
 
   const start = performance.now();
   await new Promise((resolve) => {
     function tick(now) {
       const elapsed = now - start;
       tracks.forEach((track) => paintDissolve(track, elapsed));
+      paintScrollbar(elapsed);
       if (erased) {
         erased.clear();
         textRuns.forEach(({ text: node, length, start: runStart }) => {
