@@ -74,16 +74,23 @@ function followWriting(delta) {
     rect = boxes[boxes.length - 1];
   } else if (focusNode.nodeType === Node.ELEMENT_NODE) {
     const box = focusNode.getBoundingClientRect();
-    rect = { bottom: box.top + Math.min(box.height, 80) };
+    rect = { left: box.left, right: box.right, bottom: box.top + Math.min(box.height, 80) };
   }
   if (!rect) return;
   const win = state.frame.contentWindow;
-  const consoleTop = ui.consoleBox.getBoundingClientRect().top;
-  const visibleHeight =
-    matchMedia('(max-width:700px)').matches && !ui.consoleBox.hidden
-      ? Math.min(win.innerHeight, consoleTop - 24)
-      : win.innerHeight;
-  const overflow = rect.bottom - visibleHeight * 0.72;
+  const consoleBox = ui.consoleBox.hidden ? null : ui.consoleBox.getBoundingClientRect();
+  const clearOfConsole = consoleBox ? consoleBox.top - 24 : win.innerHeight;
+  let overflow;
+  if (matchMedia('(max-width:700px)').matches) {
+    // On small screens the console spans the full width: keep writing in the area above it.
+    overflow = rect.bottom - Math.min(win.innerHeight, clearOfConsole) * 0.72;
+  } else if (consoleBox && rect.right > consoleBox.left && rect.left < consoleBox.right) {
+    // On wide screens the console only covers the bottom-right corner. Text written in
+    // that column (the end of the footer, for example) must rise above it.
+    overflow = Math.max(rect.bottom - win.innerHeight * 0.72, rect.bottom - clearOfConsole);
+  } else {
+    overflow = rect.bottom - win.innerHeight * 0.72;
+  }
   if (overflow > 1) {
     const step = reduceMotion.matches
       ? overflow
@@ -132,8 +139,8 @@ function playPhase(phase, number, total, token) {
         position = next;
         updateCode(code.slice(0, position));
       }
-      if (!state.skipped && phase.kind === 'html' && state.focusNode?.isConnected)
-        followWriting(delta);
+      // Keep following during the script phase too, so the last section settles in view.
+      if (!state.skipped && state.focusNode?.isConnected) followWriting(delta);
       const percent = Math.round(((number + position / code.length) / total) * 100);
       ui.percent.textContent = percent + '%';
       ui.progress.style.width = percent + '%';
