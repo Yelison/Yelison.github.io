@@ -2,6 +2,7 @@
  * Builds the site into dist/:
  *
  *   index.html, portfolio.html  the page, assembled from src/partials and content/
+ *   live-source.json            the page split into phases, in English and Spanish
  *   app.js                      bundled from src/scripts/portfolio
  *   dots.js                     vendor dot grid + the background that uses it
  *   style.css                   from src/styles
@@ -9,7 +10,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { phases } from '../src/live-build/phases.js';
+import { fontStylesheet, phases } from '../src/live-build/phases.js';
 import { bundle } from './lib/bundle.mjs';
 import { renderProjects, renderToolkit } from './lib/content.mjs';
 import { extractMarkup } from './lib/markup.mjs';
@@ -78,9 +79,10 @@ export async function build({ outDir = fromRoot('dist') } = {}) {
       dictionary,
     });
 
-  // The markup is authored in English; Spanish is applied at runtime from the dictionary.
+  // The markup is authored in English; Spanish is produced at build time from the dictionary.
   const english = resolvePhases(pagePhases, resolverFor('en'));
   const dictionaries = buildDictionaries(bodyOf(english), content.projectTranslations);
+  const spanish = resolvePhases(pagePhases, resolverFor('es', dictionaries.es));
 
   const styles = readStyles('portfolio');
   const app = await bundle(fromRoot('src', 'scripts', 'portfolio', 'main.js'), {
@@ -91,6 +93,25 @@ export async function build({ outDir = fromRoot('dist') } = {}) {
     await bundle(fromRoot('src', 'scripts', 'shared', 'dot-background.js')),
   ].join('\n');
 
+  const liveSource = {
+    font: fontStylesheet,
+    phases: english.map((phase, index) => {
+      if (phase.kind === 'css') return { ...phase, source: styles };
+      if (phase.kind === 'js') {
+        // Everything the visitor watched being built is already on screen.
+        const revealAll =
+          "document.querySelectorAll('.reveal').forEach((el) => el.classList.add('visible'));";
+        return { ...phase, source: [revealAll, app, dots].join('\n') };
+      }
+      const translated = spanish[index];
+      return {
+        ...phase,
+        source: { en: phase.source, es: translated.source },
+        ...(phase.prelude && { prelude: { en: phase.prelude, es: translated.prelude } }),
+      };
+    }),
+  };
+
   fs.rmSync(outDir, { recursive: true, force: true });
   fs.mkdirSync(outDir, { recursive: true });
   const write = (file, value) => fs.writeFileSync(path.join(outDir, file), value);
@@ -98,15 +119,16 @@ export async function build({ outDir = fromRoot('dist') } = {}) {
   const page = staticPage({ head: readPartial('head'), body: bodyOf(english) });
   write('index.html', page);
   write('portfolio.html', page);
+  write('live-source.json', JSON.stringify(liveSource));
   write('app.js', app);
   write('dots.js', dots);
   write('style.css', styles);
   copy('Yelisson-Ortiz-CV.pdf', 'src', 'assets', 'Yelisson-Ortiz-CV.pdf');
   copy('interactive-dot-grid-LICENSE.txt', 'src', 'vendor', 'interactive-dot-grid', 'LICENSE.txt');
-  return { projects: content.projects.length };
+  return { projects: content.projects.length, phases: liveSource.phases.length };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const { projects } = await build();
-  console.log(`Built dist/ with ${projects} visible project(s).`);
+  const { projects, phases: count } = await build();
+  console.log(`Built dist/ with ${projects} visible project(s) and ${count} live-build phases.`);
 }

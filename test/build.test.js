@@ -8,11 +8,18 @@ import { build } from '../scripts/build.mjs';
 describe('build', () => {
   let outDir;
   let portfolio;
+  let live;
+  const body = (lang) =>
+    live.phases
+      .filter((phase) => phase.kind === 'html' && !phase.setup)
+      .map((phase) => (phase.prelude?.[lang] ?? '') + phase.source[lang])
+      .join('');
 
   before(async () => {
     outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'portfolio-build-'));
     await build({ outDir });
     portfolio = fs.readFileSync(path.join(outDir, 'portfolio.html'), 'utf8');
+    live = JSON.parse(fs.readFileSync(path.join(outDir, 'live-source.json'), 'utf8'));
   });
 
   after(() => fs.rmSync(outDir, { recursive: true, force: true }));
@@ -21,6 +28,7 @@ describe('build', () => {
     for (const file of [
       'index.html',
       'portfolio.html',
+      'live-source.json',
       'app.js',
       'dots.js',
       'style.css',
@@ -31,24 +39,46 @@ describe('build', () => {
     }
   });
 
-  it('assembles the page in order, with the visible projects', () => {
-    const order = [
-      '<header>',
-      '<section class="hero">',
-      'expertise-strip',
-      'id="work"',
-      'data-project="silabin"',
-    ];
-    const positions = order.map((marker) => portfolio.indexOf(marker));
-    assert.ok(
-      positions.every((position) => position > 0),
-      positions.join(),
+  it('the static page and the live build contain exactly the same body', () => {
+    assert.ok(portfolio.endsWith(body('en')));
+  });
+
+  it('only setup phases are applied without typing, and they come first', () => {
+    const setup = live.phases.map((phase) => Boolean(phase.setup));
+    assert.deepEqual(setup.slice(0, 2), [true, true]);
+    assert.ok(setup.slice(2).every((value) => !value));
+    assert.match(live.phases[0].source.en, /^<!doctype html>\n<html lang="en"/);
+    assert.match(live.phases[0].source.es, /^<!doctype html>\n<html lang="es"/);
+  });
+
+  it('every phase has a label in both languages', () => {
+    for (const phase of live.phases) {
+      assert.ok(phase.label.en && phase.label.es, JSON.stringify(phase));
+    }
+  });
+
+  it('builds the Spanish page at build time', () => {
+    const spanish = body('es');
+    assert.match(spanish, />Proyectos<\/a/);
+    assert.match(spanish, />Desarrollador Full-Stack<\/span/);
+    assert.match(spanish, />Hablemos\.<\/h2>/);
+    assert.match(spanish, /aria-label="Navegación principal"/);
+    assert.match(
+      live.phases[0].source.es,
+      /<title>Yelisson Ortiz — Desarrollador Full-Stack<\/title>/,
     );
-    assert.deepEqual(
-      [...positions].sort((a, b) => a - b),
-      positions,
-    );
-    assert.doesNotMatch(portfolio, /data-project="pequo"/);
+  });
+
+  it('keeps the English language button in the Spanish build', () => {
+    // Only annotated markup is translated: a blanket replace of lang="en" would also hit data-lang="en".
+    assert.match(body('es'), /data-lang="en"/);
+  });
+
+  it('runs the bundled scripts at the end of the live build', () => {
+    const scripts = live.phases.at(-1);
+    assert.equal(scripts.kind, 'js');
+    assert.ok(scripts.source.includes(fs.readFileSync(path.join(outDir, 'app.js'), 'utf8')));
+    assert.ok(scripts.source.includes(fs.readFileSync(path.join(outDir, 'dots.js'), 'utf8')));
   });
 
   it('bundles the dictionaries into app.js', () => {
