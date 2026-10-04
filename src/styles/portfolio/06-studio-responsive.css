@@ -1,0 +1,219 @@
+/* Breakpoints for the studio theme. */
+@media (max-width: 1050px) {
+  .hero {
+    gap: 5%;
+    grid-template-columns: 1fr 1fr;
+  }
+  .hero h1 {
+    font-size: 4.9vw;
+  }
+  .hero-bottom > p {
+    font-size: 16px;
+  }
+  .editor-body {
+    padding-left: 12px;
+    gap: 10px;
+  }
+  .editor-body pre {
+    font-size: 11px;
+  }
+  .code-tabs button {
+    padding-inline: 13px;
+  }
+  .hero-links {
+    gap: 20px;
+  }
+  .hero-top {
+    margin-bottom: 45px;
+  }
+  .header-actions {
+    gap: 13px;
+  }
+  nav {
+    gap: 18px;
+  }
+}
+@media (max-width: 760px) {
+  header {
+    height: 80px;
+  }
+  nav {
+    display: none;
+  }
+  .header-actions {
+    gap: 12px;
+  }
+  .theme-toggle {
+    padding: 7px 9px;
+  }
+  .theme-label {
+    display: none;
+  }
+  .hero {
+    display: block;
+    padding-top: 27px;
+  }
+  .hero-top {
+    align-items: start;
+    gap: 13px;
+    margin-bottom: 35px;
+  }
+  .hero-top .eyebrow {
+    font-size: 9px;
+  }
+  .hero h1 {
+    font-size: clamp(39px, 8.9vw, 62px);
+    line-height: 1.15;
+    margin-bottom: 23px;
+  }
+  .hero-line {
+    padding-bottom: 3px;
+  }
+  .hero-bottom > p {
+    max-width: 440px;
+  }
+  .hero-bottom {
+    gap: 25px;
+  }
+  .hero-links {
+    gap: 25px;
+  }
+  .code-window {
+    margin-top: 40px;
+    transform: none;
+    max-width: 540px;
+  }
+  .editor-body {
+    height: 335px;
+    min-height: 335px;
+    padding: 18px;
+    gap: 15px;
+  }
+  .editor-body pre {
+    font-size: 12px;
+  }
+  .code-titlebar {
+    padding: 14px 17px;
+  }
+  .hero-note {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 9px;
+  }
+  .expertise-strip {
+    padding-top: 30px;
+    padding-bottom: 15px;
+  }
+  .tech-heading {
+    gap: 20px;
+  }
+  .tech-heading > span {
+    font-size: 10px;
+  }
+  .tech-row .marquee-track {
+    animation-duration: 48s;
+  }
+  .marquee-track .tech-badge {
+    padding: 11px 14px;
+    font-size: 11px;
+  }
+  .tech-group {
+    gap: 9px;
+    padding-right: 9px;
+  }
+  .section {
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+  .project-visual {
+    height: 275px;
+  }
+  .project-feature {
+    padding: 23px;
+  }
+  .experience {
+    padding-top: 0;
+    padding-bottom: 55px;
+  }
+  .experience-top h2 {
+    font-size: 32px;
+  }
+  .contact h2 {
+    font-size: 59px;
+  }
+  .asterisk {
+    font-size: 57px;
+  }
+  .contact-title {
+    gap: 10px;
+  }
+  .email {
+    font-size: 23px;
+  }
+  .demo-stage {
+    background: white;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .code-window {
+    animation: none;
+    transform: none;
+  }
+  .tech-row .marquee-track {
+    animation: none;
+    width: auto;
+  }
+  .tech-group {
+    flex-wrap: wrap;
+    padding: 0 6%;
+    gap: 8px;
+  }
+  .tech-group[aria-hidden='true'] {
+    display: none;
+  }
+  .tech-row {
+    mask-image: none;
+  }
+  .type-cursor {
+    animation: none;
+  }
+  .editor-body {
+    scroll-behavior: auto;
+  }
+}
+.editor-body {
+  height: 380px;
+  min-height: 380px;
+}
+.hero-content .hero-accent,
+.hero-content .primary {
+  transition:
+    color 0.65s ease,
+    background-color 0.65s ease,
+    border-radius 0.65s ease;
+}
+.hero-content h1 {
+  transition: letter-spacing 0.65s ease;
+}
+
+[data-theme='light'] .hero-accent,
+[data-theme='light'] .brand span,
+[data-theme='light'] nav a:hover,
+[data-theme='light'] .repo-link,
+[data-theme='light'] .project-links,
+[data-theme='light'] .contact h2 em,
+[data-theme='light'] .languages button[aria-pressed='true'] {
+  color: #007b76;
+}
+
+.project-feature .project-links {
+  grid-column: 1/-1;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.project-feature .project-links span {
+  color: var(--muted);
+  font-size: 13px;
+}

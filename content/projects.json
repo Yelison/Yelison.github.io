@@ -1,0 +1,115 @@
+[
+  {
+    "id": "pequo",
+    "name": "Pequo",
+    "label": {
+      "en": "PERSONAL PRODUCT · FULL-STACK DEVELOPMENT",
+      "es": "PRODUCTO PERSONAL · DESARROLLO FULL-STACK"
+    },
+    "description": {
+      "en": "Keeping families connected to their child’s day at childcare.",
+      "es": "Conectar a las familias con el día de sus hijos en el centro infantil."
+    },
+    "technologies": [],
+    "demo": null,
+    "links": [
+      {
+        "label": {
+          "en": "Explore Pequo",
+          "es": "Explorar Pequo"
+        },
+        "url": "https://pequo-web.vercel.app/",
+        "primary": true
+      }
+    ],
+    "notice": {
+      "en": "Public presentation · App requires sign-in · Private repository",
+      "es": "Presentación pública · La aplicación requiere iniciar sesión · Repositorio privado"
+    },
+    "className": "project project-feature pequo-case reveal",
+    "visible": false
+  },
+  {
+    "id": "silabin",
+    "name": "Silabín",
+    "label": {
+      "en": "PERSONAL PROJECT · INTERACTIVE DEMO",
+      "es": "PROYECTO PERSONAL · DEMO INTERACTIVA"
+    },
+    "description": {
+      "en": "Practice letters and syllables through guided reading exercises.",
+      "es": "Practicar letras y sílabas mediante ejercicios guiados de lectura."
+    },
+    "technologies": ["Next.js", "TypeScript"],
+    "demo": {
+      "url": "https://silabin-ljtp8ckdq-yelison1s-projects.vercel.app/",
+      "enabled": true
+    },
+    "links": [
+      {
+        "label": {
+          "en": "View source on GitHub",
+          "es": "Ver código en GitHub"
+        },
+        "url": "https://github.com/Yelison/silabin",
+        "primary": false
+      }
+    ],
+    "className": "project reveal",
+    "visible": true
+  },
+  {
+    "id": "leocontigo",
+    "name": "LeoContigo",
+    "label": {
+      "en": "PERSONAL PROJECT · LIVE DEMO",
+      "es": "PROYECTO PERSONAL · DEMO DISPONIBLE"
+    },
+    "description": {
+      "en": "A progressive path of reading challenges in Spanish, with saved progress.",
+      "es": "Un camino progresivo de desafíos de lectura en español, con progreso guardado."
+    },
+    "technologies": ["React", "Vite"],
+    "demo": {
+      "url": "https://yelison.github.io/leo-contigo/",
+      "enabled": true
+    },
+    "links": [
+      {
+        "label": {
+          "en": "Open live demo",
+          "es": "Abrir demo"
+        },
+        "url": "https://yelison.github.io/leo-contigo/",
+        "primary": false
+      },
+      {
+        "label": {
+          "en": "GitHub",
+          "es": "GitHub"
+        },
+        "url": "https://github.com/Yelison/leo-contigo",
+        "primary": false
+      }
+    ],
+    "className": "project reveal",
+    "visible": false
+  },
+  {
+    "id": "skoolscout",
+    "name": "SkoolScout",
+    "label": {
+      "en": "PROFESSIONAL EXPERIENCE",
+      "es": "EXPERIENCIA PROFESIONAL · SAAS EDUCATIVO"
+    },
+    "description": {
+      "en": "Design systems. Shared testing. A more reliable frontend.",
+      "es": "Sistemas de diseño. Pruebas compartidas. Un frontend más confiable."
+    },
+    "technologies": ["Design systems", "Testing", "Delivery"],
+    "demo": null,
+    "links": [],
+    "className": "project project-feature reveal",
+    "visible": false
+  }
+]

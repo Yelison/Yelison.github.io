@@ -1,0 +1,23 @@
+{
+  "apiNotExecuted": "Not executed",
+  "apiPending": "Pending…",
+  "apiSend": "Send GET",
+  "apiSimulation": "LOCAL SIMULATION",
+  "artLabel": "Interactive geometric composition",
+  "codeLanguageApi": "Node.js · API simulation",
+  "codeLanguageCss": "CSS · Live preview",
+  "codeLanguageHtml": "HTML · Live preview",
+  "codeLanguageJs": "JavaScript · Live preview",
+  "codeProgress": "Code progress",
+  "demoRestore": "Restore",
+  "emailCopied": "Email copied.",
+  "emailCopyFailed": "Select the email to copy it, or click it to write a message.",
+  "loadingProject": "Loading {name}…",
+  "motionResume": "Enable animations",
+  "openProject": "Open {name}",
+  "pageDescription": "Full-Stack Developer building web applications with React, TypeScript, Node.js, Spring Boot and Django. Available for remote opportunities.",
+  "pageTitle": "Yelisson Ortiz — Full-Stack Developer",
+  "projectFrameTitle": "{name} — interactive Spanish reading app",
+  "themeDark": "Dark",
+  "themeSwitchToDark": "Switch to dark mode"
+}

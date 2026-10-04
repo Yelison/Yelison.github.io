@@ -1,0 +1,28 @@
+/* Scrollbar styling. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #08e8de var(--panel);
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: var(--panel);
+}
+*::-webkit-scrollbar-thumb {
+  background: #08e8de;
+  border: 2px solid var(--panel);
+  border-radius: 10px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #65f4ee;
+}
+*::-webkit-scrollbar-corner {
+  background: var(--panel);
+}
+.editor-body,
+.demo-stage {
+  scrollbar-width: thin;
+  scrollbar-color: #08e8de var(--panel);
+}

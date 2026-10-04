@@ -1,0 +1,201 @@
+/* Modal that embeds a live project demo. */
+.demo-launch {
+  border: 0;
+  display: inline-block;
+  margin: 20px 20px 0 0;
+  padding: 12px 21px;
+  cursor: pointer;
+}
+.demo-open {
+  overflow: hidden;
+}
+#silabin-demo {
+  width: min(1180px, 94vw);
+  height: min(850px, 92dvh);
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  border: 1px solid #dce0ef;
+  border-radius: 16px;
+  background: white;
+  color: var(--ink);
+  box-shadow: 0 30px 100px #111a4650;
+  overflow: hidden;
+}
+#silabin-demo::backdrop {
+  background: #131b3c99;
+  backdrop-filter: blur(7px);
+}
+#silabin-demo[open] {
+  animation: demo-in 0.4s var(--ease);
+}
+#silabin-demo.expanded {
+  width: 100vw;
+  height: 100dvh;
+  border-radius: 0;
+  border: 0;
+}
+.demo-shell {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.demo-toolbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 15px 24px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+.demo-heading {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.demo-heading h2 {
+  font-size: 22px;
+  letter-spacing: -0.04em;
+}
+.demo-heading > span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.demo-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.demo-controls button {
+  font-size: 13px;
+  padding: 9px 16px;
+  border: 1px solid var(--line);
+  background: white;
+  color: var(--ink);
+  border-radius: 22px;
+}
+.demo-controls #demo-close {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: white;
+}
+.demo-stage {
+  position: relative;
+  min-height: 0;
+  flex: 1;
+  background: #fff;
+}
+#demo-frame-host,
+#demo-frame-host iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+.demo-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: var(--bg);
+  z-index: 1;
+  color: var(--muted);
+  pointer-events: none;
+  font-size: 14px;
+}
+.demo-loading[hidden] {
+  display: none;
+}
+.demo-spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #d9deef;
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: turn 0.9s linear infinite;
+}
+.demo-footer {
+  padding: 10px 24px;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.demo-footer a {
+  color: var(--blue);
+  white-space: nowrap;
+}
+.demo-controls button:focus-visible,
+.demo-launch:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+@keyframes demo-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@media (max-width: 700px) {
+  #silabin-demo {
+    width: 100vw;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+  .demo-toolbar {
+    padding: 12px 14px;
+    gap: 8px;
+  }
+  .demo-heading {
+    display: block;
+  }
+  .demo-heading h2 {
+    font-size: 20px;
+  }
+  .demo-heading > span {
+    font-size: 10px;
+  }
+  .demo-controls {
+    gap: 6px;
+  }
+  .demo-controls button {
+    font-size: 12px;
+    padding: 8px 13px;
+  }
+  #demo-expand {
+    display: none;
+  }
+  .demo-footer {
+    padding: 9px 14px;
+    font-size: 10px;
+    gap: 12px;
+  }
+  .demo-footer span {
+    max-width: 220px;
+  }
+  .demo-launch {
+    margin-right: 15px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #silabin-demo[open] {
+    animation: none;
+  }
+  .demo-spinner {
+    animation: none;
+  }
+}

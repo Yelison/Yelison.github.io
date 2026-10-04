@@ -1,0 +1,30 @@
+/* Reserve the preview text slots so typing never changes page geometry. */
+.hero-content h1 {
+  height: 3.5em;
+  min-height: 3.5em;
+  overflow: hidden;
+}
+.hero-content .hero-line {
+  min-height: 1.17em;
+}
+.hero-content .hero-bottom > p {
+  height: 5em;
+  min-height: 5em;
+  overflow: hidden;
+}
+.hero-content .primary {
+  white-space: nowrap;
+}
+@media (max-width: 760px) {
+  .hero-content h1 {
+    height: 4.7em;
+    min-height: 4.7em;
+  }
+  .hero-content .hero-line {
+    min-height: 1.17em;
+  }
+  .hero-content .hero-bottom > p {
+    height: 6.4em;
+    min-height: 6.4em;
+  }
+}

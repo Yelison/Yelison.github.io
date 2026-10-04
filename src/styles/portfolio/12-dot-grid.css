@@ -1,0 +1,30 @@
+/* Interactive dot-grid background canvas. */
+.interactive-dots {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: linear-gradient(to bottom, #000, transparent);
+}
+.hero {
+  isolation: isolate;
+}
+.hero > :not(.interactive-dots) {
+  position: relative;
+  z-index: 1;
+}
+
+body {
+  isolation: isolate;
+  position: relative;
+}
+body > .interactive-dots {
+  position: fixed !important;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  mask-image: none;
+  z-index: -1 !important;
+}

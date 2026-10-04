@@ -8,14 +8,22 @@
     "node": ">=22"
   },
   "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "npm run build && node scripts/serve.mjs",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test": "node --test \"test/**/*.test.js\"",
+    "test:e2e": "playwright test",
+    "check": "npm run format:check && npm run lint && npm run build && npm test"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
+    "esbuild": "^0.28.2",
     "eslint": "^10.12.0",
     "globals": "^17.13.0",
+    "parse5": "^8.0.1",
     "prettier": "^3.9.9"
   }
 }
