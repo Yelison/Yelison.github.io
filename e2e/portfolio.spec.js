@@ -34,6 +34,16 @@ test.describe('portfolio page', () => {
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   });
 
+  test('pauses and resumes animations', async ({ page }) => {
+    await page.goto('/portfolio.html');
+    const toggle = page.locator('.motion-toggle');
+    await toggle.click();
+    await expect(page.locator('html')).toHaveClass(/motion-paused/);
+    await expect(toggle).toHaveAttribute('aria-label', 'Enable animations');
+    await toggle.click();
+    await expect(page.locator('html')).not.toHaveClass(/motion-paused/);
+  });
+
   test('expands the career timeline', async ({ page }) => {
     await page.goto('/portfolio.html');
     await page.getByText('Explore my experience').click();
