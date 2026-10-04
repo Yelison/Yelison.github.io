@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#050505" />
+    <title>Yelisson Ortiz — Full-Stack Developer</title>
+    <meta
+      name="description"
+      content="Mira cómo se construye mi portafolio en vivo. Full-Stack Developer: React, TypeScript, Node.js, Spring Boot y Django."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='8' fill='%23111216'/%3E%3Ctext x='5' y='27' font-family='monospace' font-size='22' fill='%23e5a56c'%3E%3E_%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="prefetch" href="portfolio.html" />
+    <link rel="prefetch" href="style.css" />
+    <link rel="prefetch" href="app.js" />
+    <link rel="stylesheet" href="boot.css" />
+    <script src="boot.js" defer></script>
+    <script src="dots.js" defer></script>
+  </head>
+  <body>
+    <div id="build-stage"></div>
+    <main id="launch-screen">
+      <div class="launch-center">
+        <button id="launch" aria-label="Abrir consola y construir el portafolio" aria-describedby="launch-description">
+          <svg viewBox="0 0 48 40" aria-hidden="true">
+            <rect x="3" y="3" width="42" height="34" rx="3" />
+            <path d="M12 13l7 7-7 7M25 27h10" />
+          </svg>
+        </button>
+        <aside class="launch-hint" id="launch-description">
+          <p data-boot="launchTitle">Mira cómo se construye mi portafolio.</p>
+          <span data-boot="launchText">Haz clic para comenzar.</span>
+        </aside>
+      </div>
+      <a class="direct-link" href="portfolio.html" data-boot="direct">Saltar construcción</a>
+    </main>
+    <section id="build-console" aria-label="Código fuente en vivo" hidden>
+      <div class="console-bar">
+        <span class="console-lights" aria-hidden="true"><i></i><i></i><i></i></span
+        ><span data-boot="consoleTitle">yelisson / portfolio</span><button id="skip" data-boot="skip">Saltar</button>
+      </div>
+      <div class="console-tabs" aria-label="Archivo en construcción">
+        <span data-file="index.html" class="active">index.html</span><span data-file="style.css">style.css</span
+        ><span data-file="app.js">app.js</span>
+      </div>
+      <div class="console-code" aria-hidden="true">
+        <pre><code id="source-text"></code><span class="cursor">▌</span></pre>
+      </div>
+      <div class="console-status">
+        <span id="build-status" role="status">Preparando…</span><span id="build-percent">0%</span>
+      </div>
+      <div class="console-progress"><i id="build-progress"></i></div>
+    </section>
+    <div id="build-error" role="alert" hidden>
+      <p data-boot="error">No se pudo iniciar la experiencia.</p>
+      <a href="portfolio.html" data-boot="direct">Saltar construcción</a>
+    </div>
+    <button id="replay" hidden data-boot="replay">Destruir</button>
+    <dialog id="destroy-dialog" aria-labelledby="destroy-title" aria-describedby="destroy-description">
+      <form id="destroy-form">
+        <span class="destroy-label" data-boot="destroyLabel">SYSTEM / RESET</span>
+        <h2 id="destroy-title" data-boot="destroyTitle"></h2>
+        <p id="destroy-description" data-boot="destroyDescription"></p>
+        <label for="destroy-input" id="destroy-prompt" data-boot="destroyPrompt"></label
+        ><input id="destroy-input" autocomplete="off" spellcheck="false" required />
+        <div class="destroy-actions">
+          <button type="button" id="destroy-cancel" data-boot="destroyCancel"></button
+          ><button type="submit" id="destroy-confirm" data-boot="destroyConfirm" disabled></button>
+        </div>
+      </form>
+    </dialog>
+    <noscript
+      ><style>
+        #launch {
+          display: none;
+        }
+      </style>
+      <p class="noscript">
+        <span lang="es">Puedes visitar el <a href="portfolio.html">portafolio directamente</a>.</span>
+        <span lang="en">You can visit the <a href="portfolio.html">portfolio directly</a>.</span>
+      </p></noscript
+    >
+  </body>
+</html>
