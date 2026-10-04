@@ -664,20 +664,20 @@ html,
   border-color: #b53832;
 }
 
-/* Replica of the portfolio scrollbar that dissolves during the destruction (destroy.js). */
-.destroy-scrollbar {
+/* Replica of the portfolio scrollbar, animated during the build and the destruction (scrollbar.js). */
+.scrollbar-replica {
   position: fixed;
   z-index: 8;
   pointer-events: none;
 }
-.destroy-scrollbar-thumb {
+.scrollbar-replica-thumb {
   position: absolute;
   left: 2px;
   right: 2px;
   border-radius: 3px;
   background: currentColor;
 }
-.destroy-scrollbar-arrow {
+.scrollbar-replica-arrow {
   position: absolute;
   left: 50%;
   width: 6px;
@@ -685,10 +685,10 @@ html,
   translate: -50% 0;
   fill: currentColor;
 }
-.destroy-scrollbar-arrow.up {
+.scrollbar-replica-arrow.up {
   top: 4px;
 }
-.destroy-scrollbar-arrow.down {
+.scrollbar-replica-arrow.down {
   bottom: 4px;
 }
 
