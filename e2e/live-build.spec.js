@@ -4,7 +4,9 @@ const BUILD_TIMEOUT = 60_000;
 const portfolio = (page) => page.frameLocator('#build-stage iframe');
 
 test.describe('live build', () => {
-  test('builds the portfolio in front of the visitor @mobile', async ({ page }) => {
+  test('builds the portfolio in front of the visitor, then destroys it @mobile', async ({
+    page,
+  }) => {
     test.slow();
     await setPreferences(page, { 'portfolio-language': 'en' });
     await page.goto('/');
@@ -17,6 +19,15 @@ test.describe('live build', () => {
     await expect(page.locator('#build-console')).toBeHidden();
     await expect(portfolio(page).locator('nav a').first()).toHaveText('Selected work');
     await expect(portfolio(page).locator('#typed-code')).not.toBeEmpty();
+
+    await page.locator('#replay').click();
+    const confirm = page.locator('#destroy-confirm');
+    await expect(confirm).toBeDisabled();
+    await page.locator('#destroy-input').fill('destroy');
+    await expect(confirm).toBeEnabled();
+    await confirm.click();
+    await expect(page.locator('#launch-screen')).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('#build-stage iframe')).toHaveCount(0);
   });
 
   test('builds in Spanish and can switch back to English', async ({ page }) => {
