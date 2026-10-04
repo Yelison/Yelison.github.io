@@ -14,11 +14,18 @@ test.describe('live build', () => {
     await page.locator('#launch').click();
     await expect(page.locator('#build-console')).toBeVisible();
     await expect(page.locator('#source-text')).toContainText('<header>', { timeout: 15_000 });
+    const desktop = test.info().project.name === 'desktop';
+    // On desktop the scrollbar glides with the build progress on a replica.
+    if (desktop) await expect(page.locator('.scrollbar-replica')).toHaveCount(1);
 
     await expect(page.locator('#replay')).toBeVisible({ timeout: BUILD_TIMEOUT });
     await expect(page.locator('#build-console')).toBeHidden();
     await expect(portfolio(page).locator('nav a').first()).toHaveText('Selected work');
     await expect(portfolio(page).locator('#typed-code')).not.toBeEmpty();
+    // Once the page is back at the top, the native scrollbar takes over again.
+    const iframe = page.frames().find((frame) => frame !== page.mainFrame());
+    await expect(page.locator('.scrollbar-replica')).toHaveCount(0, { timeout: 10_000 });
+    expect(await iframe.evaluate(() => document.documentElement.style.scrollbarColor)).toBe('');
 
     await page.locator('#replay').click();
     const confirm = page.locator('#destroy-confirm');
@@ -27,7 +34,6 @@ test.describe('live build', () => {
     await expect(confirm).toBeEnabled();
     await confirm.click();
     // The page stays still while it is taken apart.
-    const iframe = page.frames().find((frame) => frame !== page.mainFrame());
     const scrollBefore = await iframe.evaluate(() => scrollY);
     await page.mouse.move(400, 400);
     await page.mouse.wheel(0, 800);

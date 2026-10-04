@@ -1,5 +1,6 @@
 import { installDrawing, traceLayer } from './drawing.js';
 import { syncBootTheme, text } from './language.js';
+import { createBuildScrollbar } from './scrollbar.js';
 import { loadSource } from './source.js';
 import { reduceMotion, state, ui } from './state.js';
 import { STORAGE_KEYS, storedTheme, writeStorage } from '../shared/storage.js';
@@ -37,7 +38,13 @@ function selectFile(name) {
     .forEach((el) => el.classList.toggle('active', el.dataset.file === name));
 }
 
+function stopBuildScrollbar() {
+  state.buildScrollbar?.stop();
+  state.buildScrollbar = null;
+}
+
 function makeFrame() {
+  stopBuildScrollbar();
   state.frame = document.createElement('iframe');
   state.frame.title = text('buildingFrameTitle');
   state.frame.allow = 'microphone; autoplay; fullscreen';
@@ -141,7 +148,8 @@ function playPhase(phase, number, total, token) {
       }
       // Keep following during the script phase too, so the last section settles in view.
       if (!state.skipped && state.focusNode?.isConnected) followWriting(delta);
-      const percent = Math.round(((number + position / code.length) / total) * 100);
+      state.progress = (number + position / code.length) / total;
+      const percent = Math.round(state.progress * 100);
       ui.percent.textContent = percent + '%';
       ui.progress.style.width = percent + '%';
       if (position < code.length) requestAnimationFrame(tick);
@@ -215,6 +223,8 @@ async function finishBuild(phases, token) {
     .map((phase) => phase.source)
     .join('\n');
   state.doc.body.append(script);
+  const root = state.doc.documentElement;
+  state.buildScrollbar?.handover(() => !root.classList.contains('build-scroll-room'));
   state.frame.contentWindow.scrollTo({
     top: 0,
     behavior: state.skipped || reduceMotion.matches ? 'instant' : 'smooth',
@@ -253,6 +263,8 @@ export async function build() {
     const setup = state.data.phases.filter((phase) => phase.setup);
     if (!(await prepareDocument(setup, token))) return;
     installDrawing();
+    state.progress = 0;
+    state.buildScrollbar = createBuildScrollbar(state.frame, () => state.progress);
     const phases = state.data.phases.filter((phase) => !phase.setup);
     ui.consoleBox.classList.add('docked');
     for (let index = 0; index < phases.length; index++) {
@@ -265,6 +277,7 @@ export async function build() {
     await finishBuild(state.data.phases, token);
   } catch {
     if (token !== state.run) return;
+    stopBuildScrollbar();
     state.running = false;
     ui.consoleBox.hidden = true;
     ui.error.hidden = false;
@@ -275,6 +288,7 @@ export async function build() {
 /** Cancels the animation and loads the finished page. */
 export function skipBuild() {
   ++state.run;
+  stopBuildScrollbar();
   state.skipped = true;
   state.drawingObserver?.disconnect();
   traceLayer.replaceChildren();
