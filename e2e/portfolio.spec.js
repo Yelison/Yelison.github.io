@@ -54,6 +54,18 @@ test.describe('portfolio page', () => {
     await expect(page.locator('#code-language')).toHaveText('CSS · Live preview');
   });
 
+  test('simulates the backend request', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/portfolio.html');
+    await page.getByRole('button', { name: 'Backend' }).click();
+    await expect(page.locator('#code-language')).toHaveText('Node.js · API simulation');
+    await page.getByRole('button', { name: 'Send GET' }).click();
+    await expect(page.locator('.api-status')).toHaveText('200 OK');
+    await expect(page.locator('.api-response')).toContainText('"developer": "Yelisson Ortiz"');
+    await page.getByRole('button', { name: 'Frontend' }).click();
+    await expect(page.locator('.api-preview')).toBeHidden();
+  });
+
   test('expands the career timeline', async ({ page }) => {
     await page.goto('/portfolio.html');
     await page.getByText('Explore my experience').click();

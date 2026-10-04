@@ -1,5 +1,7 @@
+import { t } from '../i18n.js';
 import { onLanguageChange } from '../language.js';
 import { MOTION_EVENT } from '../../shared/storage.js';
+import { createBackendDemo } from './backend.js';
 import { createCodeView } from './code-view.js';
 import { createFrontendDemo } from './frontend.js';
 import { heroDemo } from './state.js';
@@ -15,6 +17,7 @@ export function initHeroDemo() {
     heroDemo.codeDue = performance.now();
   }, START_DELAY);
   const frontend = createFrontendDemo(codeView);
+  const backend = createBackendDemo({ editor, codeView, frontend });
 
   // Time spent paused does not count towards the next typing step.
   let pausedAt = null;
@@ -24,7 +27,9 @@ export function initHeroDemo() {
     } else if (pausedAt !== null) {
       const elapsed = performance.now() - pausedAt;
       heroDemo.codeDue += elapsed;
+      heroDemo.apiDue += elapsed;
       pausedAt = null;
+      backend.resume();
     }
   });
   window.addEventListener(MOTION_EVENT, () => {
@@ -34,6 +39,9 @@ export function initHeroDemo() {
   onLanguageChange(() => {
     frontend.syncLanguage();
     codeView.syncLanguage();
-    codeView.setLanguageLabel(frontend.languageLabel());
+    codeView.setLanguageLabel(
+      heroDemo.mode === 'backend' ? t('codeLanguageApi') : frontend.languageLabel(),
+    );
+    backend.syncLanguage();
   });
 }
