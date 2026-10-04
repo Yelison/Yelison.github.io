@@ -1,0 +1,134 @@
+/*
+ * Injected into the portfolio iframe while the launcher writes it.
+ * `live-drawing` is set during the build and `live-complete` once it has finished.
+ */
+
+/* Reserve the final size of each section so the page does not jump while it is typed. */
+html.live-drawing {
+  overflow-anchor: none;
+  scroll-behavior: auto;
+}
+html.live-drawing * {
+  overflow-anchor: none;
+}
+html.live-drawing .hero {
+  min-height: 650px;
+}
+html.live-drawing .code-window {
+  min-height: 480px;
+}
+html.live-drawing .project:not(.project-feature) {
+  min-height: 560px;
+}
+html.live-drawing .contact {
+  min-height: 570px;
+}
+html.live-drawing .hero-line {
+  min-height: 1.2em;
+}
+
+/* Borders are drawn by an SVG overlay in the launcher; hide the real ones until it finishes. */
+html.live-drawing .trace-building {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Decorative loops wait until the page is complete. */
+html.live-drawing .marquee-track,
+html.live-drawing .letter-tiles span,
+html.live-drawing .reading-type,
+html.live-drawing .asterisk {
+  animation-play-state: paused !important;
+}
+
+/* Fixed desktop geometry, kept after the build so the page does not reflow when it completes. */
+@media (min-width: 761px) {
+  html.live-drawing .hero,
+  html.live-complete .hero {
+    min-height: 650px;
+    grid-template-rows: 30px minmax(480px, auto) 55px;
+    row-gap: 0;
+    align-items: start;
+  }
+  html.live-drawing .hero-top,
+  html.live-complete .hero-top {
+    grid-row: 1;
+    grid-column: 1/-1;
+    margin-bottom: 0;
+  }
+  html.live-drawing .hero-content,
+  html.live-complete .hero-content {
+    grid-row: 2;
+    grid-column: 1;
+    padding-top: 65px;
+    align-self: start;
+  }
+  html.live-drawing .hero h1,
+  html.live-complete .hero h1 {
+    min-height: 2.35em;
+  }
+  html.live-drawing .hero-bottom > p,
+  html.live-complete .hero-bottom > p {
+    min-height: 3.2em;
+  }
+  html.live-drawing .hero-links,
+  html.live-complete .hero-links {
+    min-height: 52px;
+  }
+  html.live-drawing .code-window,
+  html.live-complete .code-window {
+    grid-row: 2;
+    grid-column: 2;
+    align-self: start;
+  }
+  html.live-drawing .hero-note,
+  html.live-complete .hero-note {
+    grid-row: 3;
+    grid-column: 1/-1;
+    margin-top: 0;
+  }
+
+  html.live-drawing header,
+  html.live-complete header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+  }
+  html.live-drawing header .brand,
+  html.live-complete header .brand {
+    justify-self: start;
+  }
+  html.live-drawing header nav,
+  html.live-complete header nav {
+    justify-self: center;
+  }
+  html.live-drawing .header-actions,
+  html.live-complete .header-actions {
+    justify-self: end;
+    min-width: 280px;
+    justify-content: flex-end;
+  }
+  html.live-drawing .theme-toggle,
+  html.live-complete .theme-toggle {
+    min-width: 74px;
+  }
+  html.live-drawing .languages,
+  html.live-complete .languages {
+    min-width: 54px;
+  }
+  html.live-drawing .contact-nav,
+  html.live-complete .contact-nav {
+    min-width: 80px;
+    text-align: center;
+  }
+}
+
+/* Extra room at the bottom so the console can follow the last sections. */
+html.build-scroll-room body::after {
+  content: '';
+  display: block;
+  height: 100vh;
+  min-height: 500px;
+  width: 100%;
+  pointer-events: none;
+}

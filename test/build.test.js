@@ -30,8 +30,10 @@ describe('build', () => {
       'portfolio.html',
       'live-source.json',
       'app.js',
+      'boot.js',
       'dots.js',
       'style.css',
+      'boot.css',
       'Yelisson-Ortiz-CV.pdf',
       'interactive-dot-grid-LICENSE.txt',
     ]) {

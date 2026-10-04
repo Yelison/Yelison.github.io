@@ -1,11 +1,12 @@
 /**
  * Builds the site into dist/:
  *
- *   index.html, portfolio.html  the page, assembled from src/partials and content/
- *   live-source.json            the page split into phases, in English and Spanish
- *   app.js                      bundled from src/scripts/portfolio
- *   dots.js                     vendor dot grid + the background that uses it
- *   style.css                   from src/styles
+ *   index.html           launcher that builds the portfolio live (src/pages/index.html)
+ *   portfolio.html       the finished page, for visitors who skip the animation
+ *   live-source.json     the phases the launcher types (src/live-build/phases.js)
+ *   app.js, boot.js      bundled from src/scripts/portfolio and src/scripts/boot
+ *   dots.js              vendor dot grid + the background that uses it
+ *   style.css, boot.css  from src/styles
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -88,6 +89,7 @@ export async function build({ outDir = fromRoot('dist') } = {}) {
   const app = await bundle(fromRoot('src', 'scripts', 'portfolio', 'main.js'), {
     i18n: dictionaries,
   });
+  const boot = await bundle(fromRoot('src', 'scripts', 'boot', 'main.js'));
   const dots = [
     read('src', 'vendor', 'interactive-dot-grid', 'dot-grid.js'),
     await bundle(fromRoot('src', 'scripts', 'shared', 'dot-background.js')),
@@ -116,13 +118,14 @@ export async function build({ outDir = fromRoot('dist') } = {}) {
   fs.mkdirSync(outDir, { recursive: true });
   const write = (file, value) => fs.writeFileSync(path.join(outDir, file), value);
   const copy = (file, ...source) => fs.copyFileSync(fromRoot(...source), path.join(outDir, file));
-  const page = staticPage({ head: readPartial('head'), body: bodyOf(english) });
-  write('index.html', page);
-  write('portfolio.html', page);
+  write('index.html', read('src', 'pages', 'index.html'));
+  write('portfolio.html', staticPage({ head: readPartial('head'), body: bodyOf(english) }));
   write('live-source.json', JSON.stringify(liveSource));
   write('app.js', app);
+  write('boot.js', boot);
   write('dots.js', dots);
   write('style.css', styles);
+  write('boot.css', read('src', 'styles', 'boot.css'));
   copy('Yelisson-Ortiz-CV.pdf', 'src', 'assets', 'Yelisson-Ortiz-CV.pdf');
   copy('interactive-dot-grid-LICENSE.txt', 'src', 'vendor', 'interactive-dot-grid', 'LICENSE.txt');
   return { projects: content.projects.length, phases: liveSource.phases.length };
