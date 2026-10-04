@@ -1,0 +1,77 @@
+[
+  {
+    "company": "SkoolScout",
+    "date": {
+      "en": "Oct 2024 · Latest role",
+      "es": "Oct 2024 · Puesto más reciente"
+    },
+    "role": {
+      "en": "Frontend Developer · EdTech SaaS · Remote",
+      "es": "Frontend Developer · SaaS educativo · Remoto"
+    },
+    "description": {
+      "en": "Design-token automation, shared testing infrastructure and reusable delivery workflows. Frontend ownership with contributions to the Spring Boot API.",
+      "es": "Automatización de tokens de diseño, infraestructura compartida de pruebas y flujos de entrega reutilizables. Desarrollo frontend con contribuciones a la API de Spring Boot."
+    }
+  },
+  {
+    "company": "Intellisys · Okus",
+    "date": {
+      "en": "Feb 2023 — Jun 2024",
+      "es": "Feb 2023 — Jun 2024"
+    },
+    "role": {
+      "en": "Frontend Developer · Customer education",
+      "es": "Frontend Developer · Educación de clientes"
+    },
+    "description": {
+      "en": "Refactored component architecture and data flow, built a reusable React + Redux library and delivered authenticated Node.js endpoints backed by MySQL.",
+      "es": "Refactoricé la arquitectura de componentes y el flujo de datos, desarrollé una biblioteca React + Redux y endpoints autenticados en Node.js con MySQL."
+    }
+  },
+  {
+    "company": "State Search",
+    "date": {
+      "en": "Jan 2022 — Feb 2023",
+      "es": "Ene 2022 — Feb 2023"
+    },
+    "role": {
+      "en": "Full-Stack Developer · Data aggregation",
+      "es": "Full-Stack Developer · Agregación de datos"
+    },
+    "description": {
+      "en": "Built the React interface and optimized Django pagination, caching and queries. Consolidated public data portals through a Python + Selenium pipeline.",
+      "es": "Desarrollé la interfaz React y optimicé paginación, caché y consultas en Django. Unifiqué portales de datos públicos mediante un flujo de Python + Selenium."
+    }
+  },
+  {
+    "company": "Intellisys · MyLegalTeck",
+    "date": {
+      "en": "May 2020 — Oct 2021",
+      "es": "May 2020 — Oct 2021"
+    },
+    "role": {
+      "en": "Full-Stack Developer · Legal services",
+      "es": "Full-Stack Developer · Servicios legales"
+    },
+    "description": {
+      "en": "Reduced code duplication by approximately 40% through reusable components. Integrated payment providers, webhook validation and route-level internationalization.",
+      "es": "Reduje la duplicación de código aproximadamente un 40% con componentes reutilizables. Integré proveedores de pago, validación de webhooks e internacionalización por rutas."
+    }
+  },
+  {
+    "company": "Intranet",
+    "date": {
+      "en": "Jan 2019 — Apr 2020",
+      "es": "Ene 2019 — Abr 2020"
+    },
+    "role": {
+      "en": "Full-Stack Developer · Payroll automation",
+      "es": "Full-Stack Developer · Automatización de nómina"
+    },
+    "description": {
+      "en": "Automated a manual payroll process with a generator integrated with the Zoho API, a React interface and Docker deployment.",
+      "es": "Automaticé un proceso manual de nómina con un generador integrado con la API de Zoho, una interfaz React y despliegue con Docker."
+    }
+  }
+]

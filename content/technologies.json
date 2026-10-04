@@ -1,0 +1,40 @@
+[
+  {
+    "id": "frontend",
+    "items": [
+      "TypeScript",
+      "JavaScript (ES6+)",
+      "HTML5",
+      "CSS3 / SASS",
+      "React 19",
+      "Next.js / SSR",
+      "Redux",
+      "TanStack Query",
+      "Zustand",
+      "Tailwind CSS",
+      "Material UI",
+      "Storybook",
+      "i18n",
+      "Node.js",
+      "REST APIs"
+    ]
+  },
+  {
+    "id": "backend-and-tools",
+    "items": [
+      "Java / Spring Boot",
+      "Python / Django",
+      "MySQL / SQL",
+      "Flyway",
+      "Playwright",
+      "Vitest",
+      "React Testing Library",
+      "MSW",
+      "GitHub Actions",
+      "Docker",
+      "Git",
+      "Claude Code",
+      "MCP / Figma"
+    ]
+  }
+]
