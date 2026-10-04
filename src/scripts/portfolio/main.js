@@ -1,5 +1,6 @@
 import { initLanguage, refreshLanguage } from './language.js';
 import { initMotion } from './motion.js';
+import { initPointerEffects } from './pointer-effects.js';
 import { initReveal } from './reveal.js';
 import { initScrollProgress } from './scroll-progress.js';
 import { initTheme } from './theme.js';
@@ -10,5 +11,6 @@ initReveal();
 initLanguage();
 initScrollProgress();
 initMotion();
+initPointerEffects();
 initTheme();
 refreshLanguage();
