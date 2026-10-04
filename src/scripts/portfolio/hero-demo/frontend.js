@@ -39,6 +39,7 @@ export function createFrontendDemo(codeView) {
 
   const art = document.createElement('div');
   art.className = 'css-art';
+  art.setAttribute('role', 'img');
   art.setAttribute('aria-label', t('artLabel'));
   art.innerHTML =
     '<div class="art-orbit"><span class="art-dot"></span></div><div class="art-frame"></div><div class="art-core"></div>';
