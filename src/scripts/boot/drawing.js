@@ -249,7 +249,10 @@ export function installDrawing() {
     for (const entry of entries)
       for (const node of entry.type === 'characterData' ? [entry.target] : entry.addedNodes) {
         const element = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+        // Whitespace between tags is not something the visitor can follow.
+        const blank = node.nodeType === Node.TEXT_NODE && !node.textContent.trim();
         if (
+          !blank &&
           element &&
           !element.closest('style,script,head') &&
           isBuildVisible(element) &&
