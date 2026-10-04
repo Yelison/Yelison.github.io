@@ -1,4 +1,5 @@
 import { initContact } from './contact.js';
+import { initHeroDemo } from './hero-demo/index.js';
 import { initLanguage, refreshLanguage } from './language.js';
 import { initMotion } from './motion.js';
 import { initPointerEffects } from './pointer-effects.js';
@@ -16,5 +17,6 @@ initMotion();
 initPointerEffects();
 initProjectDemo();
 initTheme();
+initHeroDemo();
 initContact();
 refreshLanguage();
