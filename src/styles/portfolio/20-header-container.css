@@ -1,0 +1,78 @@
+/* Center the capped header against the same 1700px content container. */
+header {
+  width: 88%;
+  max-width: 1496px;
+  margin-inline: auto;
+}
+
+.all-projects {
+  gap: 10px;
+}
+.external-link-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.all-projects {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.all-projects .external-link-icon {
+  width: 17px;
+  height: 17px;
+  display: block;
+}
+[data-theme='light'] .code-window {
+  background: var(--code-bg);
+  box-shadow: 0 16px 45px #24252c0c;
+}
+[data-theme='light'] .code-titlebar,
+[data-theme='light'] .code-status {
+  background: #eeece7;
+}
+[data-theme='light'] .code-number,
+[data-theme='light'] .code-mark {
+  color: var(--accent-ink);
+}
+
+header .brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  width: 250px;
+  height: 80px;
+}
+header .brand .brand-name {
+  font-size: 23px;
+  line-height: 1.2;
+  letter-spacing: -0.04em;
+  font-weight: 550;
+  white-space: nowrap;
+  color: var(--ink);
+}
+header .brand .brand-name span {
+  color: var(--blue);
+}
+header .brand .brand-role {
+  position: static;
+  font:
+    11px/1.5 'DM Mono',
+    monospace;
+  letter-spacing: 0;
+  white-space: nowrap;
+  transition: none;
+}
+@media (max-width: 760px) {
+  header .brand {
+    width: 200px;
+  }
+  header .brand .brand-role {
+    font-size: 10px;
+  }
+}

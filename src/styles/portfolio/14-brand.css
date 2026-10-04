@@ -1,0 +1,224 @@
+/* Brand monogram and header identity animation. */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0;
+  font-size: inherit;
+  flex-shrink: 0;
+}
+.brand .brand-monogram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  font:
+    600 27px/1 'DM Sans',
+    sans-serif;
+  letter-spacing: -0.075em;
+  padding-right: 2px;
+  color: var(--ink);
+  transition:
+    border-color 0.25s,
+    background 0.25s;
+}
+.brand .brand-monogram > span {
+  color: var(--blue);
+  margin-left: 1px;
+}
+.brand:hover .brand-monogram {
+  border-color: var(--blue);
+  background: var(--panel-alt);
+}
+[data-theme='light'] .brand .brand-monogram {
+  color: var(--ink);
+}
+[data-theme='light'] .brand .brand-monogram > span {
+  color: #007b76;
+}
+footer .brand .brand-monogram {
+  width: 42px;
+  height: 42px;
+  font-size: 24px;
+}
+
+header .brand {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  overflow: visible;
+}
+header .brand .brand-monogram {
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: nowrap;
+  transition:
+    width 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    font-size 0.6s,
+    padding 0.6s,
+    border-color 0.25s,
+    background 0.25s;
+}
+header .brand.brand-intro .brand-monogram {
+  width: 200px;
+  font-size: 23px;
+  letter-spacing: -0.04em;
+  justify-content: flex-start;
+  padding-left: 14px;
+  background: var(--bg);
+}
+@media (max-width: 760px) {
+  header .brand.brand-intro .brand-monogram {
+    width: 180px;
+    font-size: 21px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  header .brand .brand-monogram {
+    transition: none;
+  }
+}
+
+header .brand.brand-intro .brand-monogram {
+  width: 200px;
+  font-size: 23px;
+  padding: 0;
+  position: absolute;
+  display: block;
+}
+header .brand-intro .brand-first,
+header .brand-intro .brand-last {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font: inherit;
+  letter-spacing: inherit;
+  margin: 0;
+  transition:
+    left 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.3s;
+}
+header .brand-intro .brand-first {
+  left: 14px;
+  color: var(--ink);
+}
+header .brand-intro .brand-last {
+  left: 111px;
+  color: var(--blue);
+}
+header .brand-intro .brand-first-tail {
+  color: inherit;
+  margin: 0;
+}
+header .brand-intro .brand-last-tail {
+  color: inherit;
+  margin: 0;
+}
+header .brand.brand-intro.brand-joining .brand-monogram {
+  width: 48px;
+  font-size: 27px;
+  letter-spacing: -0.075em;
+}
+header .brand-joining .brand-first {
+  left: 6px;
+}
+header .brand-joining .brand-last {
+  left: 23px;
+}
+[data-theme='light'] header .brand-intro .brand-last {
+  color: #007b76;
+}
+@media (max-width: 760px) {
+  header .brand.brand-intro .brand-monogram {
+    width: 200px;
+    font-size: 23px;
+  }
+  header .brand.brand-intro.brand-joining .brand-monogram {
+    width: 48px;
+    font-size: 27px;
+  }
+}
+
+header .brand.brand-intro:not(.brand-joining) .brand-monogram {
+  transition: none;
+}
+header .brand.brand-joining .brand-monogram {
+  transition:
+    width 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    font-size 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    letter-spacing 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+header .brand-intro .brand-first,
+header .brand-intro .brand-last {
+  transition: left 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  header .brand.brand-joining .brand-monogram,
+  header .brand-intro .brand-first,
+  header .brand-intro .brand-last {
+    transition: none;
+  }
+}
+
+header .brand.brand-intro:not(.brand-joining) .brand-monogram {
+  width: 178px;
+}
+header .brand-intro .brand-first {
+  left: 12px;
+}
+header .brand-intro .brand-last {
+  left: 104px;
+}
+header .brand-joining .brand-first {
+  left: 6px;
+}
+header .brand-joining .brand-last {
+  left: 23px;
+}
+@media (max-width: 760px) {
+  header .brand.brand-intro:not(.brand-joining) .brand-monogram {
+    width: 178px;
+  }
+}
+
+header .brand {
+  width: 200px;
+  justify-content: flex-start;
+  align-items: center;
+  height: 72px;
+}
+header .brand .brand-role {
+  position: absolute;
+  left: 62px;
+  top: 14px;
+  font:
+    12px/1.65 'DM Mono',
+    monospace;
+  letter-spacing: 0;
+  color: var(--muted);
+  white-space: nowrap;
+  transition:
+    left 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    top 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+header .brand.brand-intro:not(.brand-joining) .brand-role {
+  left: 0;
+  top: 52px;
+}
+header .brand.brand-intro:not(.brand-joining) .brand-role br {
+  display: none;
+}
+header .brand .brand-role br:after {
+  content: ' ';
+}
+header .brand.brand-intro:not(.brand-joining) .brand-role {
+  word-spacing: 2px;
+}
+header .brand.brand-intro:not(.brand-joining) .brand-role br {
+  display: initial;
+}

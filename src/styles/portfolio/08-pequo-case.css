@@ -1,0 +1,97 @@
+/* Pequo case study (hidden project, kept for when it is re-enabled). */
+.pequo-case {
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  border-top: 2px solid #08e8de;
+  background: linear-gradient(135deg, var(--soft), var(--panel) 65%);
+}
+.pequo-case .project-copy {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 24px;
+}
+.pequo-case h3 {
+  font-size: 38px;
+  letter-spacing: -0.045em;
+}
+.pequo-story {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin: 28px 0;
+}
+.pequo-story .eyebrow {
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.pequo-story p:not(.eyebrow) {
+  font-size: 16px;
+  color: var(--muted);
+  margin: 0;
+  max-width: 560px;
+}
+.pequo-flow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 26px;
+}
+.pequo-flow > div {
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+.pequo-step {
+  font:
+    14px 'DM Mono',
+    monospace;
+  color: var(--blue);
+  display: block;
+  margin-bottom: 24px;
+}
+.pequo-flow h4 {
+  font-size: 18px;
+  margin: 0 0 10px;
+  font-weight: 500;
+}
+.pequo-flow p {
+  font-size: 16px;
+  margin: 0;
+  color: var(--muted);
+}
+.pequo-case .project-links {
+  margin: 0;
+  gap: 20px;
+}
+.pequo-case .project-links span {
+  font-size: 14px;
+}
+[data-theme='light'] .pequo-step {
+  color: #007b76;
+}
+@media (max-width: 760px) {
+  .pequo-case {
+    padding: 24px;
+  }
+  .pequo-story,
+  .pequo-flow {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .pequo-story {
+    margin: 24px 0;
+  }
+  .pequo-flow > div {
+    padding: 20px;
+  }
+  .pequo-step {
+    margin-bottom: 14px;
+  }
+  .pequo-case .project-copy {
+    display: block;
+  }
+  .pequo-case .project-copy > p:not(.eyebrow) {
+    margin-top: 14px;
+  }
+}

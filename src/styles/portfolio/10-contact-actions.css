@@ -1,0 +1,33 @@
+/* Email actions in the contact section. */
+.email-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 26px;
+}
+.email-actions .email {
+  margin: 0;
+}
+.copy-email {
+  border: 1px solid var(--line);
+  background: var(--panel-alt);
+  color: var(--ink);
+  border-radius: 6px;
+  padding: 11px 16px;
+  min-height: 44px;
+  font-size: 14px;
+}
+.copy-email:hover {
+  border-color: var(--blue);
+}
+.copy-status {
+  min-height: 24px;
+  font-size: 14px !important;
+  margin: 8px 0 0 !important;
+  color: var(--muted);
+}
+.hero-links {
+  flex-wrap: wrap;
+  row-gap: 14px;
+}
