@@ -155,11 +155,13 @@ function lockScroll(win) {
 
 const SCROLLBAR_ARROW = 12;
 const SCROLLBAR_CELL = { width: 5, height: 10 };
+/** While the middle of the page is still dissolving, well before the header (3.5s). */
+const SCROLLBAR_DISSOLVE_START = 2000;
 
 /**
  * The native scrollbar cannot be masked, so it is swapped for an identical replica
  * in the launcher (same size, colors, arrows and thumb position) that dissolves cell
- * by cell from the bottom up, just before the header. Returns null for overlay
+ * by cell from the bottom up, while the middle of the page is still breaking apart. Returns null for overlay
  * scrollbars (mobile), which take no space and fade with the page.
  */
 function createScrollbarTrack(frame, win, doc) {
@@ -213,7 +215,7 @@ function createScrollbarTrack(frame, win, doc) {
       cells.push({
         x: x * cellWidth,
         y: y * cellHeight,
-        start: 3000 + fromBottom * 700 + random(0, 350),
+        start: SCROLLBAR_DISSOLVE_START + fromBottom * 700 + random(0, 350),
       });
     }
   bar.style.maskRepeat = 'no-repeat';
