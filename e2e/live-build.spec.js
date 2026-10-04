@@ -26,6 +26,13 @@ test.describe('live build', () => {
     await page.locator('#destroy-input').fill('destroy');
     await expect(confirm).toBeEnabled();
     await confirm.click();
+    // The page stays still while it is taken apart.
+    const iframe = page.frames().find((frame) => frame !== page.mainFrame());
+    const scrollBefore = await iframe.evaluate(() => scrollY);
+    await page.mouse.move(400, 400);
+    await page.mouse.wheel(0, 800);
+    await page.waitForTimeout(300);
+    expect(await iframe.evaluate(() => scrollY)).toBe(scrollBefore);
     await expect(page.locator('#launch-screen')).toBeVisible({ timeout: 15_000 });
     await expect(page.locator('#build-stage iframe')).toHaveCount(0);
   });

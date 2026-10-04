@@ -124,6 +124,105 @@ function paintDissolve(track, elapsed) {
   track.el.style.webkitMaskImage = mask;
 }
 
+const SCROLL_KEYS = new Set([
+  ' ',
+  'PageUp',
+  'PageDown',
+  'Home',
+  'End',
+  'ArrowUp',
+  'ArrowDown',
+  'ArrowLeft',
+  'ArrowRight',
+]);
+
+/** Keeps the page where it is while it is taken apart, so no intact section scrolls into view. */
+function lockScroll(win) {
+  const top = win.scrollY;
+  const left = win.scrollX;
+  const block = (event) => event.preventDefault();
+  win.addEventListener('wheel', block, { passive: false, capture: true });
+  win.addEventListener('touchmove', block, { passive: false, capture: true });
+  win.addEventListener('keydown', (event) => SCROLL_KEYS.has(event.key) && event.preventDefault(), {
+    capture: true,
+  });
+  // Anything else that still moves the page (dragging the scrollbar, autoscroll) is undone.
+  win.addEventListener('scroll', () => {
+    if (win.scrollY !== top || win.scrollX !== left)
+      win.scrollTo({ top, left, behavior: 'instant' });
+  });
+}
+
+const SCROLLBAR_ARROW = 12;
+const SCROLLBAR_CELL = { width: 5, height: 10 };
+/** While the middle of the page is still dissolving, well before the header (3.5s). */
+const SCROLLBAR_DISSOLVE_START = 2000;
+
+/**
+ * The native scrollbar cannot be masked, so it is swapped for an identical replica
+ * in the launcher (same size, colors, arrows and thumb position) that dissolves cell
+ * by cell from the bottom up, while the middle of the page is still breaking apart. Returns null for overlay
+ * scrollbars (mobile), which take no space and fade with the page.
+ */
+function createScrollbarTrack(frame, win, doc) {
+  const root = doc.documentElement;
+  const width = win.innerWidth - root.clientWidth;
+  const colors = win.getComputedStyle(root).scrollbarColor?.match(/rgba?\([^)]*\)/g);
+  if (width <= 0 || !colors || colors.length < 2) return null;
+  const frameBox = frame.getBoundingClientRect();
+  const height = root.clientHeight;
+  const trackLength = height - 2 * SCROLLBAR_ARROW;
+  const thumbLength = Math.round((trackLength * height) / root.scrollHeight);
+  const maxScroll = root.scrollHeight - height;
+  const thumbTop =
+    SCROLLBAR_ARROW +
+    Math.round((trackLength - thumbLength) * (maxScroll > 0 ? win.scrollY / maxScroll : 0));
+
+  const bar = document.createElement('div');
+  bar.className = 'destroy-scrollbar';
+  bar.setAttribute('aria-hidden', 'true');
+  Object.assign(bar.style, {
+    left: `${frameBox.left + root.clientWidth}px`,
+    top: `${frameBox.top}px`,
+    width: `${width}px`,
+    height: `${height}px`,
+    background: colors[1],
+    color: colors[0],
+  });
+  // Pixel-stepped arrows, like the native ones (a CSS triangle would be antialiased).
+  const arrow = (direction, path) =>
+    `<svg class="destroy-scrollbar-arrow ${direction}" viewBox="0 0 6 3" shape-rendering="crispEdges"><path d="${path}"/></svg>`;
+  bar.innerHTML =
+    arrow('up', 'M2 0H4V1H5V2H6V3H0V2H1V1H2Z') +
+    '<i class="destroy-scrollbar-thumb"></i>' +
+    arrow('down', 'M0 0H6V1H5V2H4V3H2V2H1V1H0Z');
+  Object.assign(bar.querySelector('.destroy-scrollbar-thumb').style, {
+    top: `${thumbTop}px`,
+    height: `${thumbLength}px`,
+  });
+  document.body.append(bar);
+  // The native scrollbar keeps its width (so nothing reflows) but is no longer painted.
+  root.style.scrollbarColor = 'transparent transparent';
+
+  const columns = Math.max(1, Math.round(width / SCROLLBAR_CELL.width));
+  const rows = Math.ceil(height / SCROLLBAR_CELL.height);
+  const cellWidth = width / columns;
+  const cellHeight = height / rows;
+  const cells = [];
+  for (let y = 0; y < rows; y++)
+    for (let x = 0; x < columns; x++) {
+      const fromBottom = 1 - y / Math.max(1, rows - 1);
+      cells.push({
+        x: x * cellWidth,
+        y: y * cellHeight,
+        start: SCROLLBAR_DISSOLVE_START + fromBottom * 700 + random(0, 350),
+      });
+    }
+  bar.style.maskRepeat = 'no-repeat';
+  bar.style.webkitMaskRepeat = 'no-repeat';
+  return { el: bar, rect: { width, height }, cellWidth, cellHeight, cells, lastStep: -1 };
+}
+
 function terminalStep(elapsed) {
   const steps = text('destroySteps');
   if (elapsed < 1100) return steps[0];
@@ -136,6 +235,7 @@ function terminalStep(elapsed) {
 async function animateDestruction(frame, doc) {
   doc.documentElement.style.pointerEvents = 'none';
   const win = frame.contentWindow;
+  lockScroll(win);
   doc.documentElement.classList.add('motion-paused');
   win.dispatchEvent(new win.CustomEvent(MOTION_EVENT, { detail: { paused: true } }));
   // Bring the page background to the launch screen color during the destruction.
@@ -175,6 +275,8 @@ async function animateDestruction(frame, doc) {
   const erased = win.CSS?.highlights && win.Highlight ? new win.Highlight() : null;
   if (erased) win.CSS.highlights.set('destroy-erased', erased);
   const tracks = createDissolveTracks(pieces);
+  const scrollbar = createScrollbarTrack(frame, win, doc);
+  if (scrollbar) tracks.push(scrollbar);
 
   const start = performance.now();
   await new Promise((resolve) => {
@@ -201,6 +303,7 @@ async function animateDestruction(frame, doc) {
   await frame.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: 'forwards' })
     .finished;
   terminal.remove();
+  scrollbar?.el.remove();
 }
 
 /** Returns to the launch screen so the portfolio can be built again. */
@@ -208,7 +311,7 @@ async function returnToLaunchScreen() {
   ++state.run;
   state.drawingObserver?.disconnect();
   traceLayer.replaceChildren();
-  document.querySelectorAll('.destroy-terminal').forEach((el) => el.remove());
+  document.querySelectorAll('.destroy-terminal,.destroy-scrollbar').forEach((el) => el.remove());
   ui.stage.replaceChildren();
   state.frame = null;
   state.doc = null;
