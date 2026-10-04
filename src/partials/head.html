@@ -17,6 +17,14 @@
   rel="icon"
   href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23111216'/%3E%3Ctext x='5' y='27' font-family='Arial' font-size='22' font-weight='bold' fill='%23e5a56c'%3Eyo%3C/text%3E%3C/svg%3E"
 />
+<!-- Fonts load in parallel with style.css; an @import inside it would chain the requests
+     and let the page render unstyled for a frame when it is shown inside the launcher iframe. -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;550;600;650;700&family=DM+Mono:wght@400&display=swap"
+/>
 <link rel="stylesheet" href="style.css" />
 <script defer src="app.js"></script>
 <script defer src="dots.js"></script>
