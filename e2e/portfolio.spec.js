@@ -1,4 +1,4 @@
-import { expect, test } from './fixtures.js';
+import { expect, setPreferences, test } from './fixtures.js';
 
 test.describe('portfolio page', () => {
   test('switches language and remembers it @mobile', async ({ page }) => {
@@ -62,5 +62,16 @@ test.describe('portfolio page', () => {
     await dialog.getByRole('button', { name: 'Close' }).click();
     await expect(dialog).toBeHidden();
     await expect(dialog.locator('iframe')).toHaveCount(0);
+  });
+
+  test('copies the email address', async ({ page, context }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await setPreferences(page, { 'portfolio-language': 'es' });
+    await page.goto('/portfolio.html');
+    await page.getByRole('button', { name: 'Copiar correo' }).click();
+    await expect(page.locator('.copy-status')).toHaveText('Correo copiado.');
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+      'ortizyelison@gmail.com',
+    );
   });
 });

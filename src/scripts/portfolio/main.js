@@ -1,3 +1,4 @@
+import { initContact } from './contact.js';
 import { initLanguage, refreshLanguage } from './language.js';
 import { initMotion } from './motion.js';
 import { initPointerEffects } from './pointer-effects.js';
@@ -15,4 +16,5 @@ initMotion();
 initPointerEffects();
 initProjectDemo();
 initTheme();
+initContact();
 refreshLanguage();
