@@ -22,6 +22,18 @@ test.describe('portfolio page', () => {
     await expect(page.locator('.contact h2 em')).toHaveText('talk.');
   });
 
+  test('toggles the theme and remembers it', async ({ page }) => {
+    await page.goto('/portfolio.html');
+    const toggle = page.locator('#theme-toggle');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await toggle.click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(toggle).toHaveAttribute('aria-label', 'Switch to dark mode');
+    await expect(toggle.locator('.theme-label')).toHaveText('Dark');
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  });
+
   test('expands the career timeline', async ({ page }) => {
     await page.goto('/portfolio.html');
     await page.getByText('Explore my experience').click();
