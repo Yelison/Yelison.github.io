@@ -44,6 +44,16 @@ test.describe('portfolio page', () => {
     await expect(page.locator('html')).not.toHaveClass(/motion-paused/);
   });
 
+  test('types the hero code and renders the live preview', async ({ page }) => {
+    await page.goto('/portfolio.html');
+    const code = page.locator('#typed-code');
+    await expect(code).toContainText('<article class="live-card">', { timeout: 10_000 });
+    await expect(page.locator('#code-language')).toHaveText('HTML · Live preview');
+    await expect(page.locator('.live-card')).toBeVisible();
+    await page.locator('[data-code="1"]').click();
+    await expect(page.locator('#code-language')).toHaveText('CSS · Live preview');
+  });
+
   test('expands the career timeline', async ({ page }) => {
     await page.goto('/portfolio.html');
     await page.getByText('Explore my experience').click();
