@@ -101,8 +101,15 @@ console.
 
 ## Deployment
 
-The site deploys on [Vercel](https://vercel.com) using [`vercel.json`](vercel.json),
-which runs `npm run build` and serves `dist/`. No environment variables are needed.
+The site deploys on [GitHub Pages](https://pages.github.com) with
+[`pages.yml`](.github/workflows/pages.yml): once CI passes on `main`, it runs `npm run build`
+and publishes `dist/`. No environment variables are needed, and every path is relative, so
+the site works at the root of a domain or under a subpath. It can also be deployed by hand
+from the Actions tab (`workflow_dispatch`).
+
+Pages needs to be enabled once in **Settings → Pages → Source: GitHub Actions**. With the
+repository named `Yelison.github.io` the site is served at https://yelison.github.io; with
+any other name it is served at `https://yelison.github.io/<repository>/`.
 
 ## Credits
 
