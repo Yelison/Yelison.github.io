@@ -1,4 +1,12 @@
 <meta charset="utf-8" />
+<!-- Inside the launcher, the launcher's own repaints can lay this page out before style.css
+     applies. Hidden until then, that unstyled layout is never shown and never counts as a
+     layout shift (the whole body would move by its default margin). style.css shows it. -->
+<style>
+  html {
+    visibility: hidden;
+  }
+</style>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <script>
   // Apply the saved theme before the first paint to avoid a flash of the wrong colors.

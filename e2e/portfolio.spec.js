@@ -74,6 +74,22 @@ test.describe('portfolio page', () => {
     expect(await page.evaluate(() => window.layoutShift)).toBeLessThan(0.01);
   });
 
+  test('stays hidden until its stylesheet applies', async ({ page }) => {
+    // An unstyled layout, which the launcher can trigger, must never be visible.
+    let releaseStyles;
+    const stylesHeld = new Promise((resolve) => (releaseStyles = resolve));
+    await page.route('**/style.css', async (route) => {
+      await stylesHeld;
+      await route.continue();
+    });
+    await page.goto('/portfolio.html', { waitUntil: 'commit' });
+    await page.waitForFunction(() => document.querySelector('footer'));
+    const visibility = () => page.evaluate(() => getComputedStyle(document.body).visibility);
+    expect(await visibility()).toBe('hidden');
+    releaseStyles();
+    await expect.poll(visibility).toBe('visible');
+  });
+
   test('simulates the backend request', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/portfolio.html');
