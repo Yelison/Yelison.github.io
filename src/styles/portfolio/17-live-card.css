@@ -78,21 +78,30 @@
   transform-origin: left;
   transition: transform 0.1s linear;
 }
+/* Takes no room in the flow, like .live-preview (see 15-hero-preview.css); the panel
+   grows inside it, clipped to its own edges. */
 .api-preview {
+  height: var(--api-preview-height);
+  min-height: var(--api-preview-height);
+  margin-bottom: calc(-1 * var(--api-preview-height));
   overflow: hidden;
   opacity: 1;
-  transition:
-    height 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-    min-height 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.3s;
+  transition: opacity 0.3s;
+}
+.api-preview .api-panel {
+  clip-path: inset(0);
+  transition: height 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .api-preview.is-empty {
-  height: 0;
-  min-height: 0;
+  pointer-events: none;
   opacity: 0;
+}
+.api-preview.is-empty .api-panel {
+  height: 0;
 }
 @media (prefers-reduced-motion: reduce) {
   .api-preview,
+  .api-preview .api-panel,
   .code-progress-fill {
     transition: none;
   }

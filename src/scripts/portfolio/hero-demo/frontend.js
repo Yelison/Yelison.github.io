@@ -26,7 +26,6 @@ export function createFrontendDemo(codeView) {
   preview.innerHTML =
     '<article class="live-card" hidden><h3></h3><p></p><button type="button" disabled></button><button class="card-copy" type="button" disabled hidden></button><output aria-live="polite"></output></article>';
   heroContent.querySelector('h1').after(preview);
-  reservePreviewSpace(heroContent, preview);
 
   const card = preview.querySelector('article');
   const placeholders = [
@@ -206,32 +205,4 @@ export function createFrontendDemo(codeView) {
       art.setAttribute('aria-label', t('artLabel'));
     },
   };
-}
-
-/**
- * Reserves the final height of the preview so typing never shifts the page.
- * Recomputed when the hero changes width and once web fonts have loaded.
- */
-function reservePreviewSpace(heroContent, preview) {
-  let measuredWidth = 0;
-  const reserve = () => {
-    if (Math.abs(heroContent.clientWidth - measuredWidth) < 1) return;
-    measuredWidth = heroContent.clientWidth;
-    const wasEmpty = preview.classList.contains('is-empty');
-    preview.style.transition = 'none';
-    preview.style.height = preview.style.minHeight = matchMedia('(max-width:760px)').matches
-      ? '380px'
-      : '340px';
-    heroContent.style.minHeight = '';
-    heroContent.style.minHeight = heroContent.scrollHeight + 'px';
-    preview.style.height = preview.style.minHeight = '';
-    void preview.offsetHeight;
-    preview.style.transition = '';
-    if (wasEmpty) preview.classList.add('is-empty');
-  };
-  new ResizeObserver(reserve).observe(heroContent);
-  document.fonts?.ready.then(() => {
-    measuredWidth = 0;
-    reserve();
-  });
 }

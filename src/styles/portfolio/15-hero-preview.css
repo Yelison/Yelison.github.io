@@ -113,24 +113,64 @@
   }
 }
 
+/*
+ * The previews under the headline (.live-preview and .api-preview) open and close
+ * without moving anything on the page, so they cause no layout shift: each preview
+ * keeps its height but takes no room in the flow (a negative margin cancels it out),
+ * the hero reserves room for the tallest one from the first paint, and the text
+ * below slides with `translate`, which is not a layout change. `transform` is not
+ * used because the fade-in animation of .hero-bottom owns it.
+ */
+.hero-content {
+  --live-preview-height: 245px;
+  --api-preview-height: 340px;
+  align-self: start;
+  padding-bottom: var(--api-preview-height);
+}
+/* With animations on, the hero has always had 25px more room: the script that used to
+   reserve it measured .hero-bottom while its fade-in still held it 25px low. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-content {
+    padding-bottom: calc(var(--api-preview-height) + 25px);
+  }
+}
+.hero-bottom {
+  transition: translate 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-content:has(> .live-preview:not(.is-empty, [hidden])) .hero-bottom {
+  translate: 0 var(--live-preview-height);
+}
+.hero-content:has(> .api-preview:not(.is-empty, [hidden])) .hero-bottom {
+  translate: 0 var(--api-preview-height);
+}
+/* An empty card is clipped towards its middle, the way it grows back. */
 .live-preview {
+  height: var(--live-preview-height);
+  min-height: var(--live-preview-height);
+  margin-bottom: calc(-1 * var(--live-preview-height));
   overflow: hidden;
   opacity: 1;
+  clip-path: inset(0);
   transition:
-    height 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-    min-height 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    clip-path 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    translate 0.55s cubic-bezier(0.22, 1, 0.36, 1),
     opacity 0.3s;
 }
 .live-preview.is-empty {
-  height: 0;
-  min-height: 0;
+  pointer-events: none;
+  clip-path: inset(50% 0);
+  translate: 0 calc(var(--live-preview-height) / -2);
   opacity: 0;
 }
-.hero-content {
-  align-self: start;
+@media (max-width: 760px) {
+  .hero-content {
+    --live-preview-height: 255px;
+    --api-preview-height: 380px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .live-preview {
+  .live-preview,
+  .hero-bottom {
     transition: none;
   }
 }
