@@ -42,7 +42,16 @@ export function createFrontendDemo(codeView) {
   art.setAttribute('aria-label', t('artLabel'));
   art.innerHTML =
     '<div class="art-orbit"><span class="art-dot"></span></div><div class="art-frame"></div><div class="art-core"></div>';
+  art.style.position = 'relative';
+  art.style.height = '225px';
   card.append(art);
+  // The shapes of the art and, for each, the inline style typed for it (see applyPreview).
+  const shapes = [...art.querySelectorAll('[class]')].map((element) => ({
+    element,
+    tag: `class="${element.className}"`,
+    typedStyle: new RegExp(`class="${element.className}" style="([^"]*)"`),
+    appliedStyle: '',
+  }));
 
   let codeIndex = 0;
   let codePosition = 0;
@@ -82,30 +91,45 @@ export function createFrontendDemo(codeView) {
     }, 600);
   });
 
+  // The preview is re-rendered on every typing tick: only what changes is written to the DOM.
+  const setHidden = (element, hidden) => {
+    if (element.hidden !== hidden) element.hidden = hidden;
+  };
+  let artTilt;
+  const tilt = (transform) => {
+    if (transform === artTilt) return;
+    artTilt = transform;
+    art.style.transform = transform;
+  };
+  art.onpointerleave = () => tilt('rotateX(0) rotateY(0)');
+
   function followPointer(event) {
     const box = art.getBoundingClientRect();
     const x = (event.clientX - box.left) / box.width;
     const y = (event.clientY - box.top) / box.height;
-    art.style.transform = `rotateX(${(0.5 - y) * 18}deg) rotateY(${(x - 0.5) * 18}deg)`;
+    tilt(`rotateX(${(0.5 - y) * 18}deg) rotateY(${(x - 0.5) * 18}deg)`);
   }
 
   /** Renders the preview from the code typed so far in each of the three files. */
   function applyPreview(text) {
     buffers[codeIndex] = text;
     const html = buffers[0];
-    card.hidden = !html.includes('<article class="live-card">');
+    setHidden(card, !html.includes('<article class="live-card">'));
     preview.classList.toggle('is-empty', card.hidden);
-    for (const node of placeholders) node.hidden = true;
-    art.hidden = !html.includes('<div class="css-art"');
+    for (const node of placeholders) setHidden(node, true);
+    setHidden(art, !html.includes('<div class="css-art"'));
     // Each shape appears, with its inline styles, once its tag has been typed.
-    for (const shape of art.querySelectorAll('[class]')) {
-      shape.hidden = !html.includes(`class="${shape.className}"`);
-      const match = html.match(new RegExp(`class="${shape.className}" style="([^"]*)"`));
-      shape.style.cssText = match?.[1] || '';
+    for (const shape of shapes) {
+      setHidden(shape.element, !html.includes(shape.tag));
+      const style = html.match(shape.typedStyle)?.[1] || '';
+      if (style !== shape.appliedStyle) {
+        shape.appliedStyle = style;
+        shape.element.style.cssText = style;
+      }
     }
-    art.style.position = 'relative';
-    art.style.height = '225px';
-    liveStyle.textContent = buffers[1];
+    // Rewriting the sheet re-registers its @property and @keyframes rules, which restyles
+    // every animated element, so it is only rewritten when the typed CSS changes.
+    if (liveStyle.textContent !== buffers[1]) liveStyle.textContent = buffers[1];
 
     const connected = scriptConnected();
     if (connected && canAnimate()) {
@@ -120,9 +144,6 @@ export function createFrontendDemo(codeView) {
       art.classList.remove('is-ready', 'is-styled', 'is-positioned');
     }
     art.onpointermove = connected && canAnimate() ? followPointer : null;
-    art.onpointerleave = () => {
-      art.style.transform = 'rotateX(0) rotateY(0)';
-    };
     if (!connected) art.onpointerleave();
   }
 

@@ -18,14 +18,19 @@ export function createCodeView(editor) {
   progress.setAttribute('role', 'progressbar');
   progress.setAttribute('aria-valuemin', '0');
   progress.setAttribute('aria-valuemax', '100');
+  progress.setAttribute('aria-label', t('codeProgress'));
   progress.innerHTML = '<span class="code-progress-fill"></span>';
   editor.append(progress);
+  let shownPercent;
 
+  // Called on every typing tick: the progress bar is only touched when its value changes.
   function paint(text, total) {
     const percent = Math.round(Math.min(1, text.length / Math.max(1, total)) * 100);
-    progress.setAttribute('aria-label', t('codeProgress'));
-    progress.setAttribute('aria-valuenow', String(percent));
-    progress.firstElementChild.style.transform = `scaleX(${percent / 100})`;
+    if (percent !== shownPercent) {
+      shownPercent = percent;
+      progress.setAttribute('aria-valuenow', String(percent));
+      progress.firstElementChild.style.transform = `scaleX(${percent / 100})`;
+    }
 
     const fragment = document.createDocumentFragment();
     let previous = 0;
@@ -42,7 +47,7 @@ export function createCodeView(editor) {
   }
 
   function setLanguageLabel(text) {
-    languageLabel.textContent = text;
+    if (languageLabel.textContent !== text) languageLabel.textContent = text;
   }
 
   function syncLanguage() {
