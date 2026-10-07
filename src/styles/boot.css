@@ -179,6 +179,7 @@ h1 {
     width 1s,
     height 1s,
     transform 1s;
+  -webkit-backdrop-filter: blur(15px);
   backdrop-filter: blur(15px);
 }
 #build-console.docked {
@@ -580,6 +581,7 @@ html,
 }
 #destroy-dialog::backdrop {
   background: #050505a8;
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
 .destroy-label {
