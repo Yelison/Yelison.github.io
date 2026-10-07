@@ -40,17 +40,17 @@ npm start          # builds into dist/ and serves it at http://localhost:4173
 The launcher fetches `live-source.json`, so the site must be served over HTTP.
 Opening `dist/index.html` directly from disk will not work.
 
-| Script             | What it does                                                  |
-| ------------------ | ------------------------------------------------------------- |
-| `npm run build`    | Builds the site into `dist/`                                  |
-| `npm start`        | Builds and serves `dist/` locally                             |
-| `npm test`         | Unit tests (`node:test`): build, i18n, content, hero examples |
-| `npm run test:e2e` | End-to-end tests in Chromium (Playwright), desktop and mobile |
-| `npm run lint`     | ESLint                                                        |
-| `npm run format`   | Prettier                                                      |
-| `npm run check`    | Formatting, lint, build and unit tests (what CI runs first)   |
+| Script             | What it does                                                                    |
+| ------------------ | ------------------------------------------------------------------------------- |
+| `npm run build`    | Builds the site into `dist/`                                                    |
+| `npm start`        | Builds and serves `dist/` locally                                               |
+| `npm test`         | Unit tests (`node:test`): build, i18n, content, hero examples                   |
+| `npm run test:e2e` | End-to-end tests (Playwright): Chromium desktop and mobile, key tests in WebKit |
+| `npm run lint`     | ESLint                                                                          |
+| `npm run format`   | Prettier                                                                        |
+| `npm run check`    | Formatting, lint, build and unit tests (what CI runs first)                     |
 
-Run `npx playwright install chromium` once before the first end-to-end run.
+Run `npx playwright install chromium webkit` once before the first end-to-end run.
 
 ## Project structure
 

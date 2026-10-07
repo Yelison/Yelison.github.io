@@ -22,6 +22,14 @@ export default defineConfig({
       },
     },
     { name: 'mobile', use: { ...devices['Pixel 7'] }, grep: /@mobile/ },
+    // Safari: the tests tagged @webkit cover what WebKit does differently (when scripts run
+    // against the stylesheets, layout, typing). The full suite there would be slow.
+    { name: 'webkit', use: { ...devices['Desktop Safari'] }, grep: /@webkit/ },
+    {
+      name: 'webkit-mobile',
+      use: { ...devices['iPhone 14'] },
+      grep: /(?=.*@webkit)(?=.*@mobile)/,
+    },
   ],
   webServer: {
     command: 'node scripts/serve.mjs',

@@ -83,12 +83,16 @@ export const bodyOf = (resolvedPhases) =>
     .map((phase) => (phase.prelude ?? '') + phase.source)
     .join('');
 
-/** The static portfolio page: the same body the live build types, behind a regular head. */
-export function staticPage({ head, body }) {
+/**
+ * The static portfolio page: the same body the live build types, behind a regular head,
+ * with the scripts at the end of the body.
+ */
+export function staticPage({ head, body, scripts }) {
   const indentedHead = head
     .trimEnd()
     .split('\n')
     .map((line) => (line ? `  ${line}` : line))
     .join('\n');
-  return `<!doctype html>\n<html lang="en" data-theme="dark">\n<head>\n${indentedHead}\n</head>\n<body>\n${body}`;
+  const page = `<!doctype html>\n<html lang="en" data-theme="dark">\n<head>\n${indentedHead}\n</head>\n<body>\n${body}`;
+  return page.replace('</body>', `${scripts.trimEnd()}\n</body>`);
 }

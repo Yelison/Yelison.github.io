@@ -23,8 +23,6 @@
       href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap"
     />
     <link rel="stylesheet" href="boot.css" />
-    <script src="boot.js" defer></script>
-    <script src="dots.js" defer></script>
   </head>
   <body>
     <div id="build-stage"></div>
@@ -89,5 +87,9 @@
         <span lang="en">You can visit the <a href="portfolio.html">portfolio directly</a>.</span>
       </p></noscript
     >
+    <!-- At the end of the body rather than deferred: Safari runs deferred scripts before the
+         stylesheets apply, and the launcher reads its own layout as soon as it starts. -->
+    <script src="boot.js"></script>
+    <script src="dots.js"></script>
   </body>
 </html>

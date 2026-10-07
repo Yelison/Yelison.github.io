@@ -24,6 +24,7 @@
 }
 #silabin-demo::backdrop {
   background: #131b3c99;
+  -webkit-backdrop-filter: blur(7px);
   backdrop-filter: blur(7px);
 }
 #silabin-demo[open] {

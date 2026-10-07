@@ -119,7 +119,14 @@ export async function build({ outDir = fromRoot('dist') } = {}) {
   const write = (file, value) => fs.writeFileSync(path.join(outDir, file), value);
   const copy = (file, ...source) => fs.copyFileSync(fromRoot(...source), path.join(outDir, file));
   write('index.html', read('src', 'pages', 'index.html'));
-  write('portfolio.html', staticPage({ head: readPartial('head'), body: bodyOf(english) }));
+  write(
+    'portfolio.html',
+    staticPage({
+      head: readPartial('head'),
+      body: bodyOf(english),
+      scripts: readPartial('scripts'),
+    }),
+  );
   write('live-source.json', JSON.stringify(liveSource));
   write('app.js', app);
   write('boot.js', boot);

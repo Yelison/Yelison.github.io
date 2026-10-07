@@ -4,6 +4,19 @@ const BUILD_TIMEOUT = 60_000;
 const portfolio = (page) => page.frameLocator('#build-stage iframe');
 
 test.describe('live build', () => {
+  test('opens on a launch screen that covers the viewport @mobile @webkit', async ({ page }) => {
+    // Its scripts must start once the stylesheets apply. While a slow web font stylesheet is
+    // pending, Safari runs deferred scripts before any stylesheet has applied.
+    await page.route(/fonts\.googleapis\.com/, async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      await route.fulfill({ contentType: 'text/css', body: '' });
+    });
+    await page.goto('/');
+    await expect(page.locator('#launch')).toBeVisible();
+    const box = await page.locator('#launch-screen').boundingBox();
+    expect(box.height).toBe(page.viewportSize().height);
+  });
+
   test('builds the portfolio in front of the visitor, then destroys it @mobile', async ({
     page,
   }) => {
@@ -64,7 +77,9 @@ test.describe('live build', () => {
     await expect(page.locator('#replay')).toHaveText('Destroy');
   });
 
-  test('can be skipped, and returning visitors go straight to the portfolio', async ({ page }) => {
+  test('can be skipped, and returning visitors go straight to the portfolio @webkit', async ({
+    page,
+  }) => {
     await page.goto('/');
     // Spanish is the default language of the launcher, and the portfolio follows it.
     await expect(page.locator('#launch-screen .direct-link')).toHaveText('Saltar construcción');
