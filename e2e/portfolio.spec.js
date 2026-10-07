@@ -74,6 +74,19 @@ test.describe('portfolio page', () => {
     expect(await page.evaluate(() => window.layoutShift)).toBeLessThan(0.01);
   });
 
+  test('pauses the hero typing while the hero is out of view', async ({ page }) => {
+    await page.goto('/portfolio.html');
+    const code = page.locator('#typed-code');
+    await expect(code).not.toBeEmpty({ timeout: 10_000 });
+    await page.locator('#work').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(300);
+    const paused = await code.textContent();
+    await page.waitForTimeout(1500);
+    expect(await code.textContent()).toBe(paused);
+    await page.locator('.hero').scrollIntoViewIfNeeded();
+    await expect(code).not.toHaveText(paused);
+  });
+
   test('stays hidden until its stylesheet applies', async ({ page }) => {
     // An unstyled layout, which the launcher can trigger, must never be visible.
     let releaseStyles;

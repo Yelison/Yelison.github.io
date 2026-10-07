@@ -244,6 +244,7 @@ export function createBackendDemo({ editor, codeView, frontend }) {
       reducedMotion.matches ||
       isMotionPaused() ||
       document.hidden ||
+      !heroDemo.onScreen ||
       pending ||
       performance.now() < heroDemo.apiDue
     )

@@ -11,6 +11,9 @@ const START_DELAY = 1000;
 /** The interactive code editor next to the hero headline. */
 export function initHeroDemo() {
   const editor = document.querySelector('.code-window');
+  new IntersectionObserver(([entry]) => {
+    heroDemo.onScreen = entry.isIntersecting;
+  }).observe(document.querySelector('.hero'));
   const codeView = createCodeView(editor);
   setTimeout(() => {
     heroDemo.ready = true;

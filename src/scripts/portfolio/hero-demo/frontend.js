@@ -181,6 +181,7 @@ export function createFrontendDemo(codeView) {
       heroDemo.mode !== 'frontend' ||
       !canAnimate() ||
       document.hidden ||
+      !heroDemo.onScreen ||
       performance.now() < heroDemo.codeDue
     )
       return;
