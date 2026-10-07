@@ -42,7 +42,13 @@ describe('build', () => {
   });
 
   it('the static page and the live build contain exactly the same body', () => {
-    assert.ok(portfolio.endsWith(body('en')));
+    // The static page only adds its scripts, at the end of the body.
+    const scripts = fs.readFileSync(
+      new URL('../src/partials/scripts.html', import.meta.url),
+      'utf8',
+    );
+    assert.ok(portfolio.endsWith(body('en').replace('</body>', `${scripts.trimEnd()}\n</body>`)));
+    assert.equal(portfolio.match(/<script src=/g).length, 2);
   });
 
   it('only setup phases are applied without typing, and they come first', () => {
