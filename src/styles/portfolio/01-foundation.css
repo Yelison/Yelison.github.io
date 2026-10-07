@@ -13,6 +13,8 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 40px;
+  /* Hidden by an inline style in the head until this stylesheet applies. */
+  visibility: visible;
 }
 body {
   margin: 0;
