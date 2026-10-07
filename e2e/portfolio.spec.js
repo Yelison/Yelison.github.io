@@ -54,6 +54,26 @@ test.describe('portfolio page', () => {
     await expect(page.locator('#code-language')).toHaveText('CSS · Live preview');
   });
 
+  test('keeps the layout still while the hero previews appear @mobile', async ({ page }) => {
+    // Sums every layout shift not caused by input, as Cumulative Layout Shift does.
+    await page.addInitScript(() => {
+      window.layoutShift = 0;
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries())
+          if (!entry.hadRecentInput) window.layoutShift += entry.value;
+      }).observe({ type: 'layout-shift', buffered: true });
+    });
+    await page.goto('/portfolio.html');
+    await expect(page.locator('.live-card')).toBeVisible({ timeout: 10_000 });
+    await page.waitForTimeout(1000);
+    expect(await page.evaluate(() => window.layoutShift)).toBeLessThan(0.01);
+
+    await page.getByRole('button', { name: 'Backend' }).click();
+    await expect(page.locator('.api-preview')).not.toHaveClass(/is-empty/, { timeout: 10_000 });
+    await page.waitForTimeout(1000);
+    expect(await page.evaluate(() => window.layoutShift)).toBeLessThan(0.01);
+  });
+
   test('simulates the backend request', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/portfolio.html');

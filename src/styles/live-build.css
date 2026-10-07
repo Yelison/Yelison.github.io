@@ -42,6 +42,16 @@ html.live-drawing .asterisk {
   animation-play-state: paused !important;
 }
 
+/* The hero makes room for its previews only once app.js has created them, not while it is
+   typed, and without the extra room of the fade-in, which has long finished by then. */
+html.live-drawing .hero-content,
+html.live-complete .hero-content {
+  padding-bottom: var(--api-preview-height);
+}
+html.live-drawing .hero-content:not(:has(> .live-preview)) {
+  padding-bottom: 0;
+}
+
 /* Fixed desktop geometry, kept after the build so the page does not reflow when it completes. */
 @media (min-width: 761px) {
   html.live-drawing .hero,
