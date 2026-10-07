@@ -1,12 +1,12 @@
 import { t } from '../i18n.js';
+import { highlight, sharedPieces } from './highlight.js';
 
-const TOKEN_PATTERN =
-  /(\/\/[^\n]*|'[^']*'|"[^"]*"|\b(?:type|export|function|return|const|import|from|string|color|background|border-radius|letter-spacing|headline|accent|message)\b|#[a-fA-F0-9]{6}|\b\d+\b)/g;
-
-function tokenClass(token) {
-  if (token.startsWith("'") || token.startsWith('"')) return 'code-string';
-  if (/^\d|^#/.test(token)) return 'code-number';
-  return 'code-keyword';
+function toNode(piece) {
+  if (!piece.className) return document.createTextNode(piece.text);
+  const span = document.createElement('span');
+  span.className = piece.className;
+  span.textContent = piece.text;
+  return span;
 }
 
 /** The editor surface: syntax-highlighted code, a language label and a progress bar. */
@@ -18,31 +18,31 @@ export function createCodeView(editor) {
   progress.setAttribute('role', 'progressbar');
   progress.setAttribute('aria-valuemin', '0');
   progress.setAttribute('aria-valuemax', '100');
+  progress.setAttribute('aria-label', t('codeProgress'));
   progress.innerHTML = '<span class="code-progress-fill"></span>';
   editor.append(progress);
+  let shownPercent;
+  let shownPieces = [];
 
+  // Called on every typing tick: the progress bar is only touched when its value changes.
   function paint(text, total) {
     const percent = Math.round(Math.min(1, text.length / Math.max(1, total)) * 100);
-    progress.setAttribute('aria-label', t('codeProgress'));
-    progress.setAttribute('aria-valuenow', String(percent));
-    progress.firstElementChild.style.transform = `scaleX(${percent / 100})`;
-
-    const fragment = document.createDocumentFragment();
-    let previous = 0;
-    for (const match of text.matchAll(TOKEN_PATTERN)) {
-      fragment.append(document.createTextNode(text.slice(previous, match.index)));
-      const span = document.createElement('span');
-      span.className = tokenClass(match[0]);
-      span.textContent = match[0];
-      fragment.append(span);
-      previous = match.index + match[0].length;
+    if (percent !== shownPercent) {
+      shownPercent = percent;
+      progress.setAttribute('aria-valuenow', String(percent));
+      progress.firstElementChild.style.transform = `scaleX(${percent / 100})`;
     }
-    fragment.append(document.createTextNode(text.slice(previous)));
-    output.replaceChildren(fragment);
+
+    // Typing adds or removes a few characters at the end: keep the nodes that did not change.
+    const pieces = highlight(text);
+    const kept = sharedPieces(shownPieces, pieces);
+    while (output.childNodes.length > kept) output.lastChild.remove();
+    output.append(...pieces.slice(kept).map(toNode));
+    shownPieces = pieces;
   }
 
   function setLanguageLabel(text) {
-    languageLabel.textContent = text;
+    if (languageLabel.textContent !== text) languageLabel.textContent = text;
   }
 
   function syncLanguage() {
