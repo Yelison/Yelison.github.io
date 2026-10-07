@@ -1,7 +1,7 @@
 import { expect, setPreferences, test } from './fixtures.js';
 
 test.describe('portfolio page', () => {
-  test('switches language and remembers it @mobile', async ({ page }) => {
+  test('switches language and remembers it @mobile @webkit', async ({ page }) => {
     await page.goto('/portfolio.html');
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(page.locator('nav a').first()).toHaveText('Selected work');
@@ -44,7 +44,7 @@ test.describe('portfolio page', () => {
     await expect(page.locator('html')).not.toHaveClass(/motion-paused/);
   });
 
-  test('types the hero code and renders the live preview', async ({ page }) => {
+  test('types the hero code and renders the live preview @webkit', async ({ page }) => {
     await page.goto('/portfolio.html');
     const code = page.locator('#typed-code');
     await expect(code).toContainText('<article class="live-card">', { timeout: 10_000 });
@@ -54,7 +54,9 @@ test.describe('portfolio page', () => {
     await expect(page.locator('#code-language')).toHaveText('CSS · Live preview');
   });
 
-  test('keeps the layout still while the hero previews appear @mobile', async ({ page }) => {
+  test('keeps the layout still while the hero previews appear @mobile @webkit', async ({
+    page,
+  }) => {
     // Sums every layout shift not caused by input, as Cumulative Layout Shift does.
     await page.addInitScript(() => {
       window.layoutShift = 0;
@@ -87,7 +89,7 @@ test.describe('portfolio page', () => {
     await expect(code).not.toHaveText(paused);
   });
 
-  test('stays hidden until its stylesheet applies', async ({ page }) => {
+  test('stays hidden until its stylesheet applies @webkit', async ({ page }) => {
     // An unstyled layout, which the launcher can trigger, must never be visible.
     let releaseStyles;
     const stylesHeld = new Promise((resolve) => (releaseStyles = resolve));
