@@ -41,16 +41,11 @@
       "es": "Una plataforma de soporte con tickets, clientes, reportes y base de conocimiento."
     },
     "technologies": ["React", "TypeScript", "Spring Boot", "PostgreSQL"],
-    "demo": null,
+    "demo": {
+      "url": "https://yelison.github.io/resolve/",
+      "enabled": true
+    },
     "links": [
-      {
-        "label": {
-          "en": "Open static demo",
-          "es": "Abrir demo estática"
-        },
-        "url": "https://yelison.github.io/resolve/",
-        "primary": true
-      },
       {
         "label": {
           "en": "View source on GitHub",
@@ -79,7 +74,10 @@
       "es": "Una librería de componentes React accesible con design tokens, extraída de Resolve."
     },
     "technologies": ["React", "TypeScript", "Design tokens"],
-    "demo": null,
+    "demo": {
+      "url": "https://yelison.github.io/forma-ui/",
+      "enabled": true
+    },
     "links": [
       {
         "label": {
