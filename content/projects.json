@@ -30,6 +30,44 @@
     "visible": false
   },
   {
+    "id": "resolve",
+    "name": "Resolve",
+    "label": {
+      "en": "PERSONAL PROJECT · FULL-STACK",
+      "es": "PROYECTO PERSONAL · FULL-STACK"
+    },
+    "description": {
+      "en": "A customer-support platform with tickets, customers, reports and a knowledge base.",
+      "es": "Una plataforma de soporte con tickets, clientes, reportes y base de conocimiento."
+    },
+    "technologies": ["React", "TypeScript", "Spring Boot", "PostgreSQL"],
+    "demo": null,
+    "links": [
+      {
+        "label": {
+          "en": "Open static demo",
+          "es": "Abrir demo estática"
+        },
+        "url": "https://yelison.github.io/resolve/",
+        "primary": true
+      },
+      {
+        "label": {
+          "en": "View source on GitHub",
+          "es": "Ver código en GitHub"
+        },
+        "url": "https://github.com/Yelison/resolve",
+        "primary": false
+      }
+    ],
+    "notice": {
+      "en": "Demo runs on mock data in your browser",
+      "es": "La demo usa datos simulados en tu navegador"
+    },
+    "className": "project reveal",
+    "visible": true
+  },
+  {
     "id": "silabin",
     "name": "Silabín",
     "label": {
