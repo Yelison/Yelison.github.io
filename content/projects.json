@@ -68,6 +68,36 @@
     "visible": true
   },
   {
+    "id": "forma-ui",
+    "name": "Forma UI",
+    "label": {
+      "en": "PERSONAL PROJECT · DESIGN SYSTEM",
+      "es": "PROYECTO PERSONAL · SISTEMA DE DISEÑO"
+    },
+    "description": {
+      "en": "An accessible React component library with design tokens, extracted from Resolve.",
+      "es": "Una librería de componentes React accesible con design tokens, extraída de Resolve."
+    },
+    "technologies": ["React", "TypeScript", "Design tokens"],
+    "demo": null,
+    "links": [
+      {
+        "label": {
+          "en": "View source on GitHub",
+          "es": "Ver código en GitHub"
+        },
+        "url": "https://github.com/Yelison/forma-ui",
+        "primary": false
+      }
+    ],
+    "notice": {
+      "en": "In development",
+      "es": "En desarrollo"
+    },
+    "className": "project reveal",
+    "visible": true
+  },
+  {
     "id": "silabin",
     "name": "Silabín",
     "label": {
