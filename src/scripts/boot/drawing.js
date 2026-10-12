@@ -15,24 +15,13 @@ export function initTraceLayer() {
   document.body.append(traceLayer);
 }
 
-/** True when the element is actually rendered (not in a closed details/dialog, not hidden). */
+/**
+ * True when the element is actually rendered (not in a closed details/dialog, not hidden).
+ * A single native check: walking the ancestors with getComputedStyle forced a style
+ * recalculation after every node written into the iframe.
+ */
 function isBuildVisible(el) {
-  if (!el || el.closest('[hidden]')) return false;
-  for (let parent = el; parent; parent = parent.parentElement) {
-    if (parent.tagName === 'DETAILS' && !parent.open && parent !== el) {
-      const summary = parent.querySelector(':scope > summary');
-      if (!summary?.contains(el)) return false;
-    }
-    if (parent.tagName === 'DIALOG' && !parent.open) return false;
-    const style = state.frame.contentWindow.getComputedStyle(parent);
-    if (
-      style.display === 'none' ||
-      style.visibility === 'hidden' ||
-      style.contentVisibility === 'hidden'
-    )
-      return false;
-  }
-  return true;
+  return !!el?.checkVisibility({ contentVisibilityAuto: true, visibilityProperty: true });
 }
 
 function visibleBorders(style) {
@@ -220,7 +209,6 @@ function createGlow() {
     if (text.length <= previous || !text.slice(previous).trim() || glowing.size >= MAX_GLOWING_RUNS)
       return;
     const style = frame.contentWindow.getComputedStyle(node.parentElement);
-    if (style.visibility === 'hidden' || style.display === 'none') return;
     const range = doc.createRange();
     range.setStart(node, previous);
     range.setEnd(node, text.length);
