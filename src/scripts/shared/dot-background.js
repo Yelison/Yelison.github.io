@@ -33,9 +33,36 @@ export function initDotBackground() {
       !document.hidden &&
       !reduced.matches &&
       !document.documentElement.classList.contains('motion-paused');
-    const originalTick = grid.tick;
+    // The library fills every dot on its own path with a fresh rgba() string, which
+    // costs thousands of fills per frame. Dots are grouped by opacity instead, so a
+    // frame needs one fill per level (opacity is rounded to 1/100, invisible to the eye).
+    const { ctx } = grid;
     grid.tick = () => {
-      originalTick();
+      const { w, h } = grid.getViewport();
+      const { dotMin, dotMax, radiusEffect, baseAlpha, maxAlpha, smoothing, color } = grid.opts;
+      const sizeRange = dotMax - dotMin;
+      const alphaRange = maxAlpha - baseAlpha;
+      const levels = new Map();
+      ctx.clearRect(0, 0, w, h);
+      for (const dot of grid.dots) {
+        const dx = dot.x - grid.mouseX;
+        const dy = dot.y - grid.mouseY;
+        const reach = Math.max(0, 1 - Math.sqrt(dx * dx + dy * dy) / radiusEffect);
+        const strength = reach * reach;
+        dot.size += (dotMin + sizeRange * strength - dot.size) * smoothing;
+        dot.alpha += (baseAlpha + alphaRange * strength - dot.alpha) * smoothing;
+        if (dot.alpha < 0.001) continue;
+        const level = Math.round(dot.alpha * 100);
+        let path = levels.get(level);
+        if (!path) levels.set(level, (path = new Path2D()));
+        path.moveTo(dot.x + dot.size, dot.y);
+        path.arc(dot.x, dot.y, dot.size, 0, Math.PI * 2);
+      }
+      for (const [level, path] of levels) {
+        ctx.fillStyle = `rgba(${color},${level / 100})`;
+        ctx.fill(path);
+      }
+      grid.rafId = requestAnimationFrame(grid.tick);
       if (!canAnimate() || performance.now() >= animateUntil) grid.stop();
     };
     const wake = () => {
