@@ -85,7 +85,7 @@ function clipToToolkitRow(svg, row, box) {
 }
 
 /** Containers big enough for a one-frame flash of their real border to be noticed. */
-const BIG_CONTAINERS = '.project,.project-visual,.code-window';
+const BIG_CONTAINERS = '.project,.project-visual,.code-window,details';
 
 function createTracer() {
   const traced = new WeakSet();
