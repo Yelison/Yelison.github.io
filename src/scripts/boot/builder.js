@@ -48,6 +48,8 @@ function makeFrame() {
   state.frame = document.createElement('iframe');
   state.frame.title = text('buildingFrameTitle');
   state.frame.allow = 'microphone; autoplay; fullscreen';
+  // The build scrolls the page by itself; the visitor only watches until it finishes.
+  state.frame.style.pointerEvents = 'none';
   ui.stage.replaceChildren(state.frame);
   state.drawingObserver?.disconnect();
   traceLayer.replaceChildren();
@@ -233,7 +235,10 @@ async function finishBuild(phases, token) {
   rememberBuild();
   if (!state.skipped) await wait(800);
   if (token !== state.run) return;
-  const releaseRoom = () => state.doc.documentElement.classList.remove('build-scroll-room');
+  const releaseRoom = () => {
+    state.doc.documentElement.classList.remove('build-scroll-room');
+    state.frame.style.pointerEvents = '';
+  };
   if (state.frame.contentWindow.scrollY < 2) releaseRoom();
   else {
     state.frame.contentWindow.addEventListener('scrollend', releaseRoom, { once: true });
@@ -279,6 +284,7 @@ export async function build() {
     if (token !== state.run) return;
     stopBuildScrollbar();
     state.running = false;
+    state.frame.style.pointerEvents = '';
     ui.consoleBox.hidden = true;
     ui.error.hidden = false;
     ui.error.querySelector('a').focus();
