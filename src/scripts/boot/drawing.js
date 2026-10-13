@@ -96,6 +96,8 @@ function createTracer() {
    */
   return function trace(el, delay = 0) {
     if (state.skipped || reduceMotion.matches || traced.has(el)) return;
+    // The parts of a preview panel (bar, screen, footer) appear together with the panel.
+    if (el.parentElement?.closest('.project-visual')) return;
     const small = el.matches('header,.letter-tiles span,.button,.tech-badge');
     const duration = small ? 180 : 360;
     // The real border and background are only hidden from the next frame on, which let a big
@@ -393,10 +395,9 @@ export function installDrawing() {
           if (preview.card !== owner) showPreview(preview, glowText.wait());
         }
         if (!state.skipped && !reduceMotion.matches && node.nodeType === Node.ELEMENT_NODE) {
-          const screens = [node, ...node.querySelectorAll('.silabin-screen,iframe')].filter(
-            (el) =>
-              el.matches('.silabin-screen') ||
-              (el.tagName === 'IFRAME' && !el.closest('.silabin-screen')),
+          // Only the contents of a preview panel wait; its frame is drawn like any other box.
+          const screens = [node, ...node.querySelectorAll('.project-visual > *')].filter((el) =>
+            el.parentElement?.matches('.project-visual'),
           );
           for (const screen of screens) {
             const card = screen.closest('.project');
