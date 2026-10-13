@@ -75,11 +75,14 @@ function applyChunk(phase, chunk) {
   // JavaScript is only collected; it runs once its whole file has been written.
 }
 
+/** Viewport height from which the follow-scroll stops at the end of the content. */
+const CLAMP_MIN_HEIGHT = 800;
+
 /** Height of the empty scroll room below the page, measured once per build. */
 let scrollRoom = null;
 
 /** Time (seconds) the follow-scroll takes to settle on a new target. */
-const SCROLL_SMOOTH_TIME = 0.7;
+const SCROLL_SMOOTH_TIME = 0.4;
 let scrollPosition = null;
 let scrollVelocity = 0;
 
@@ -113,11 +116,15 @@ function followWriting(delta) {
   }
   // Never scroll past the end of the real content: the empty room below it exists only
   // so the document can scroll, and showing it looks like a blank gap under the footer.
-  if (scrollRoom === null) {
-    scrollRoom = parseFloat(win.getComputedStyle(doc.body, '::after').height) || 0;
+  // On short screens the console covers much more of the page, so the text must be
+  // allowed to rise above it and the room stays available.
+  if (win.innerHeight >= CLAMP_MIN_HEIGHT) {
+    if (scrollRoom === null) {
+      scrollRoom = parseFloat(win.getComputedStyle(doc.body, '::after').height) || 0;
+    }
+    const contentEnd = doc.documentElement.scrollHeight - scrollRoom;
+    overflow = Math.min(overflow, Math.max(0, contentEnd - win.innerHeight - win.scrollY));
   }
-  const contentEnd = doc.documentElement.scrollHeight - scrollRoom;
-  overflow = Math.min(overflow, Math.max(0, contentEnd - win.innerHeight - win.scrollY));
   if (reduceMotion.matches) {
     if (overflow > 1) win.scrollTo({ top: win.scrollY + overflow, behavior: 'instant' });
     return;
