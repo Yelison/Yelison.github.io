@@ -32,6 +32,14 @@ html.live-drawing .trace-building {
   border-color: transparent !important;
   background: transparent !important;
   box-shadow: none !important;
+  /* The page eases its backgrounds and borders; without this the real ones would fade out
+     over a few hundred ms instead of being hidden at once. */
+  transition: none !important;
+}
+
+/* Until its <summary> is written a <details> shows the browser's own "Details" label. */
+html.live-drawing details:not(:has(> summary)) {
+  visibility: hidden;
 }
 
 /* Decorative loops wait until the page is complete. */
