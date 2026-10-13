@@ -7,9 +7,9 @@ const MAX_GLOWING_RUNS = 400;
 /** The reveal front moves this many ms per character, and never takes longer than the maximum. */
 const REVEAL_PER_CHARACTER = 50;
 const REVEAL_MAX = 800;
-const REVEAL_MIN = 16;
+const REVEAL_MIN = 10;
 /** Backlog (ms) at which the reveal runs at half speed, so it never falls far behind the code. */
-const REVEAL_LAG = 400;
+const REVEAL_LAG = 150;
 const GLOW_COLOR = '8,232,222';
 /** How long each band of the glow trail lasts, and the whole trail. */
 const GLOW_STEP = 160;
@@ -87,8 +87,11 @@ function clipToToolkitRow(svg, row, box) {
 function createTracer() {
   const traced = new WeakSet();
 
-  /** Draws the element's border as an SVG stroke, then fades its background in. */
-  return function trace(el) {
+  /**
+   * Draws the element's border as an SVG stroke, then fades its background in. `delay` holds
+   * the drawing back until the text inside is about to be revealed, so box and text appear together.
+   */
+  return function trace(el, delay = 0) {
     if (state.skipped || reduceMotion.matches || traced.has(el)) return;
     const small = el.matches('header,.letter-tiles span,.button,.tech-badge');
     const duration = small ? 180 : 360;
@@ -165,8 +168,9 @@ function createTracer() {
 
       const animation = path.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], {
         duration,
+        delay,
         easing: 'cubic-bezier(.25,.1,.25,1)',
-        fill: 'forwards',
+        fill: 'both',
       });
       animation.finished
         .then(() => {
@@ -274,7 +278,7 @@ function createGlow() {
     animationFrame = runs.size ? requestAnimationFrame(paint) : null;
   };
 
-  return function glowText(node) {
+  function glowText(node) {
     if (
       !highlights ||
       !HighlightClass ||
@@ -322,7 +326,11 @@ function createGlow() {
       duration,
     });
     if (!animationFrame) animationFrame = requestAnimationFrame(paint);
-  };
+  }
+
+  /** How long (ms) until the reveal front gets to text queued from now on. */
+  glowText.wait = () => Math.max(0, revealCursor - performance.now());
+  return glowText;
 }
 
 /** Watches the iframe document and animates every node as it is written. */
@@ -350,6 +358,8 @@ export function installDrawing() {
           element.getClientRects().length
         )
           state.focusNode = node;
+        // Measured before this node's own text is queued: its box waits for the same moment.
+        const wait = glowText.wait();
         if (node.nodeType === Node.TEXT_NODE) glowText(node);
         if (
           node.nodeType !== Node.ELEMENT_NODE ||
@@ -359,8 +369,8 @@ export function installDrawing() {
           continue;
         const textWalker = doc.createTreeWalker(node, NodeFilter.SHOW_TEXT);
         while (textWalker.nextNode()) glowText(textWalker.currentNode);
-        trace(node);
-        node.querySelectorAll('*').forEach(trace);
+        trace(node, wait);
+        node.querySelectorAll('*').forEach((child) => trace(child, wait));
         if (
           !state.skipped &&
           !reduceMotion.matches &&
@@ -371,7 +381,7 @@ export function installDrawing() {
               { opacity: 0, transform: 'translateY(5px)' },
               { opacity: 1, transform: 'translateY(0)' },
             ],
-            { duration: 400, easing: 'ease-out' },
+            { duration: 400, delay: wait, easing: 'ease-out', fill: 'backwards' },
           );
         }
       }
