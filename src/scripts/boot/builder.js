@@ -54,6 +54,7 @@ function makeFrame() {
   state.drawingObserver?.disconnect();
   traceLayer.replaceChildren();
   state.holdUntil = 0;
+  scrollRoom = null;
   state.doc = state.frame.contentDocument;
   state.doc.open();
   liveStyles = null;
@@ -71,6 +72,9 @@ function applyChunk(phase, chunk) {
   }
   // JavaScript is only collected; it runs once its whole file has been written.
 }
+
+/** Height of the empty scroll room below the page, measured once per build. */
+let scrollRoom = null;
 
 /** Scrolls the iframe so the node being written stays in view above the console. */
 function followWriting(delta) {
@@ -100,6 +104,13 @@ function followWriting(delta) {
   } else {
     overflow = rect.bottom - win.innerHeight * 0.72;
   }
+  // Never scroll past the end of the real content: the empty room below it exists only
+  // so the document can scroll, and showing it looks like a blank gap under the footer.
+  if (scrollRoom === null) {
+    scrollRoom = parseFloat(win.getComputedStyle(doc.body, '::after').height) || 0;
+  }
+  const contentEnd = doc.documentElement.scrollHeight - scrollRoom;
+  overflow = Math.min(overflow, Math.max(0, contentEnd - win.innerHeight - win.scrollY));
   if (overflow > 1) {
     const step = reduceMotion.matches
       ? overflow
