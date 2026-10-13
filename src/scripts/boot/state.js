@@ -42,6 +42,7 @@ export const state = {
   /** The node the console follows by scrolling the iframe. */
   focusNode: null,
   drawingObserver: null,
+  releasePreviews: null,
   /** Build progress from 0 to 1, followed by the scrollbar replica. */
   progress: 0,
   /** Scrollbar replica that glides during the build (see scrollbar.js). */

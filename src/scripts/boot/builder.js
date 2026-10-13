@@ -253,6 +253,7 @@ async function prepareDocument(setup, token) {
 
 /** Ends the build: runs the page scripts and hands the iframe over to the visitor. */
 async function finishBuild(phases, token) {
+  state.releasePreviews?.();
   state.drawingObserver?.disconnect();
   state.doc
     .querySelectorAll('.trace-building')

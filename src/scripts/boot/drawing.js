@@ -344,6 +344,16 @@ export function installDrawing() {
 
   const trace = createTracer();
   const glowText = createGlow();
+  // A live preview starts loading as soon as its iframe is written, which would show it
+  // before the card around it exists. It stays hidden until the code has finished the whole
+  // card and the text revealed so far has caught up, and then fades in.
+  const previewed = new WeakSet();
+  const pendingPreviews = new Set();
+  const showPreview = (preview, delay) => {
+    pendingPreviews.delete(preview);
+    setTimeout(() => preview.fade.play(), delay);
+  };
+  state.releasePreviews = () => [...pendingPreviews].forEach((preview) => showPreview(preview, 0));
   state.drawingObserver = new MutationObserver((entries) => {
     for (const entry of entries)
       for (const node of entry.type === 'characterData' ? [entry.target] : entry.addedNodes) {
@@ -358,6 +368,31 @@ export function installDrawing() {
           element.getClientRects().length
         )
           state.focusNode = node;
+        // Once the code leaves a card, its preview can appear after the text queued so far.
+        const owner = element?.closest('.project');
+        for (const preview of pendingPreviews) {
+          if (preview.card !== owner) showPreview(preview, glowText.wait());
+        }
+        if (!state.skipped && !reduceMotion.matches && node.nodeType === Node.ELEMENT_NODE) {
+          const screens = [node, ...node.querySelectorAll('.silabin-screen,iframe')].filter(
+            (el) =>
+              el.matches('.silabin-screen') ||
+              (el.tagName === 'IFRAME' && !el.closest('.silabin-screen')),
+          );
+          for (const screen of screens) {
+            const card = screen.closest('.project');
+            if (!card || previewed.has(screen)) continue;
+            previewed.add(screen);
+            const fade = screen.animate([{ opacity: 0 }, { opacity: 1 }], {
+              duration: 450,
+              easing: 'ease-out',
+              fill: 'both',
+            });
+            fade.pause();
+            fade.finished.then(() => fade.cancel()).catch(() => {});
+            pendingPreviews.add({ card, fade });
+          }
+        }
         // Measured before this node's own text is queued: its box waits for the same moment.
         const wait = glowText.wait();
         if (node.nodeType === Node.TEXT_NODE) glowText(node);
