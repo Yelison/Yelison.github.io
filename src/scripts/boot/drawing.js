@@ -459,6 +459,23 @@ export function installDrawing() {
               fill: 'both',
             });
             appear.finished.then(() => appear.cancel()).catch(() => {});
+            // The "+" is generated content, which the text highlights cannot reach: it gets
+            // the same cyan glow through an animation of its own.
+            const plus = state.frame.contentWindow.getComputedStyle(summary, '::after').color;
+            const glow = summary.animate(
+              [
+                { color: `rgb(${GLOW_COLOR})`, textShadow: `0 0 10px rgba(${GLOW_COLOR},.8)` },
+                { color: plus, textShadow: `0 0 0 rgba(${GLOW_COLOR},0)` },
+              ],
+              {
+                pseudoElement: '::after',
+                delay: wait,
+                duration: GLOW_TRAIL,
+                easing: 'ease-out',
+                fill: 'backwards',
+              },
+            );
+            glow.finished.then(() => glow.cancel()).catch(() => {});
           }
         }
         trace(node, wait);

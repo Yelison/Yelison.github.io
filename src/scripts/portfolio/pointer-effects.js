@@ -42,9 +42,33 @@ function initMagneticLinks() {
   });
 }
 
+/**
+ * The preview of a project sits in the vertical middle of its card, so opening or closing the
+ * text under the description moves it. It slides from where it was instead of jumping.
+ */
+function initPreviewSlide(details) {
+  const visual = details.closest('.project')?.querySelector('.project-visual');
+  const summary = details.querySelector(':scope > summary');
+  if (!visual || !summary) return;
+  summary.addEventListener('click', () => {
+    if (isMotionPaused()) return;
+    const before = visual.getBoundingClientRect().top;
+    // The attribute changes right after the click; measure on the next frame, before it paints.
+    requestAnimationFrame(() => {
+      const shift = before - visual.getBoundingClientRect().top;
+      if (Math.abs(shift) < 1) return;
+      visual.animate([{ transform: `translateY(${shift}px)` }, { transform: 'translateY(0)' }], {
+        duration: 420,
+        easing: 'cubic-bezier(.22,1,.36,1)',
+      });
+    });
+  });
+}
+
 /** Expanding a <details> slides its content in. */
 function initDetailsReveal() {
   document.querySelectorAll('details').forEach((details) => {
+    initPreviewSlide(details);
     details.addEventListener('toggle', () => {
       if (!details.open || isMotionPaused()) return;
       const content = details.querySelector('.case-content,#timeline');
