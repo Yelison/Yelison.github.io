@@ -55,6 +55,8 @@ function makeFrame() {
   traceLayer.replaceChildren();
   state.holdUntil = 0;
   scrollRoom = null;
+  scrollPosition = null;
+  scrollVelocity = 0;
   state.doc = state.frame.contentDocument;
   state.doc.open();
   liveStyles = null;
@@ -75,6 +77,11 @@ function applyChunk(phase, chunk) {
 
 /** Height of the empty scroll room below the page, measured once per build. */
 let scrollRoom = null;
+
+/** Time (seconds) the follow-scroll takes to settle on a new target. */
+const SCROLL_SMOOTH_TIME = 0.7;
+let scrollPosition = null;
+let scrollVelocity = 0;
 
 /** Scrolls the iframe so the node being written stays in view above the console. */
 function followWriting(delta) {
@@ -111,11 +118,27 @@ function followWriting(delta) {
   }
   const contentEnd = doc.documentElement.scrollHeight - scrollRoom;
   overflow = Math.min(overflow, Math.max(0, contentEnd - win.innerHeight - win.scrollY));
-  if (overflow > 1) {
-    const step = reduceMotion.matches
-      ? overflow
-      : Math.min(overflow * (1 - Math.exp(-delta / 240)), delta * 0.85);
-    win.scrollTo({ top: win.scrollY + step, behavior: 'instant' });
+  if (reduceMotion.matches) {
+    if (overflow > 1) win.scrollTo({ top: win.scrollY + overflow, behavior: 'instant' });
+    return;
+  }
+  // The target jumps whenever a whole block appears, so easing straight towards it makes
+  // the scroll lurch and stall. A critically damped spring keeps the velocity continuous.
+  if (scrollPosition === null || Math.abs(win.scrollY - Math.round(scrollPosition)) > 2) {
+    scrollPosition = win.scrollY;
+    scrollVelocity = 0;
+  }
+  const target = win.scrollY + Math.max(0, overflow);
+  const seconds = delta / 1000;
+  const omega = 2 / SCROLL_SMOOTH_TIME;
+  const x = omega * seconds;
+  const decay = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x);
+  const change = scrollPosition - target;
+  const carry = (scrollVelocity + omega * change) * seconds;
+  scrollVelocity = (scrollVelocity - omega * carry) * decay;
+  scrollPosition = target + (change + carry) * decay;
+  if (Math.round(scrollPosition) !== win.scrollY) {
+    win.scrollTo({ top: Math.round(scrollPosition), behavior: 'instant' });
   }
 }
 
