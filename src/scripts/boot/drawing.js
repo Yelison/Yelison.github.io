@@ -3,7 +3,7 @@ import { reduceMotion, state } from './state.js';
 
 const SVG = 'http://www.w3.org/2000/svg';
 /** Concurrent text runs being revealed; further ones simply appear. */
-const MAX_GLOWING_RUNS = 16;
+const MAX_GLOWING_RUNS = 80;
 /** The reveal front moves this many ms per character, and never takes longer than the maximum. */
 const REVEAL_PER_CHARACTER = 50;
 const REVEAL_MAX = 800;
@@ -238,6 +238,8 @@ function createGlow() {
     return color;
   };
   const runs = new Set();
+  // When the previous run of a text node finishes revealing, so chunks reveal in order.
+  const revealedAt = new WeakMap();
   let animationFrame;
 
   const finish = (run) => {
@@ -296,6 +298,9 @@ function createGlow() {
       range.setEnd(node, previous);
     });
     ranges.forEach((range, i) => layers[i].add(range));
+    const duration = Math.min(REVEAL_MAX, length * REVEAL_PER_CHARACTER);
+    const started = Math.max(performance.now(), revealedAt.get(node) ?? 0);
+    revealedAt.set(node, started + duration);
     runs.add({
       node,
       start: previous,
@@ -303,8 +308,8 @@ function createGlow() {
       length,
       layers,
       ranges,
-      started: performance.now(),
-      duration: Math.min(REVEAL_MAX, length * REVEAL_PER_CHARACTER),
+      started,
+      duration,
     });
     if (!animationFrame) animationFrame = requestAnimationFrame(paint);
   };
