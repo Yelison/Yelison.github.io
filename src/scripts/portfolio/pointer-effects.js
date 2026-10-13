@@ -42,46 +42,59 @@ function initMagneticLinks() {
   });
 }
 
+/** Gentle ease in and out: the content grows and settles instead of snapping open. */
+const DETAILS_EASING = 'cubic-bezier(.4,0,.2,1)';
+const DETAILS_DURATION = 620;
+
 /**
- * The preview of a project sits in the vertical middle of its card, so opening or closing the
- * text under the description moves it. It slides from where it was instead of jumping.
+ * Opens or closes a <details> by growing its content from zero height (and back), so the card
+ * gets taller gradually: the preview, which sits in the middle of the card, and everything
+ * below move along with it instead of jumping.
  */
-function initPreviewSlide(details) {
-  const visual = details.closest('.project')?.querySelector('.project-visual');
-  const summary = details.querySelector(':scope > summary');
-  if (!visual || !summary) return;
-  summary.addEventListener('click', () => {
-    if (isMotionPaused()) return;
-    const before = visual.getBoundingClientRect().top;
-    // The attribute changes right after the click; measure on the next frame, before it paints.
-    requestAnimationFrame(() => {
-      const shift = before - visual.getBoundingClientRect().top;
-      if (Math.abs(shift) < 1) return;
-      visual.animate([{ transform: `translateY(${shift}px)` }, { transform: 'translateY(0)' }], {
-        duration: 420,
-        easing: 'cubic-bezier(.22,1,.36,1)',
-      });
-    });
+function slideDetails(details, content, opening) {
+  details.dataset.moving = 'true';
+  if (opening) details.open = true;
+  const style = getComputedStyle(content);
+  content.style.overflow = 'hidden';
+  const box =
+    style.boxSizing === 'border-box'
+      ? 0
+      : parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
+  const height = content.getBoundingClientRect().height - box;
+  const closed = { height: '0px', opacity: 0, paddingTop: '0px', paddingBottom: '0px' };
+  const open = {
+    height: `${height}px`,
+    opacity: 1,
+    paddingTop: style.paddingTop,
+    paddingBottom: style.paddingBottom,
+  };
+  const animation = content.animate(opening ? [closed, open] : [open, closed], {
+    duration: DETAILS_DURATION,
+    easing: DETAILS_EASING,
   });
+  const done = () => {
+    content.style.overflow = '';
+    if (!opening) details.open = false;
+    delete details.dataset.moving;
+  };
+  animation.finished.then(done, done);
 }
 
-/** Expanding a <details> slides its content in. */
+/** Expanding a <details> grows its content smoothly. */
 function initDetailsReveal() {
   document.querySelectorAll('details').forEach((details) => {
-    initPreviewSlide(details);
+    const summary = details.querySelector(':scope > summary');
+    const content = details.querySelector('.case-content,#timeline');
+    if (summary && content) {
+      summary.addEventListener('click', (event) => {
+        if (isMotionPaused()) return;
+        event.preventDefault();
+        if (details.dataset.moving) return;
+        slideDetails(details, content, !details.open);
+      });
+    }
     details.addEventListener('toggle', () => {
-      if (!details.open || isMotionPaused()) return;
-      const content = details.querySelector('.case-content,#timeline');
-      if (content) {
-        content.animate(
-          [
-            { opacity: 0, transform: 'translateY(-8px)' },
-            { opacity: 1, transform: 'translateY(0)' },
-          ],
-          { duration: 420, easing: 'cubic-bezier(.22,1,.36,1)' },
-        );
-      }
-      observeReveals();
+      if (details.open) observeReveals();
     });
   });
 }
