@@ -44,7 +44,9 @@ function initMagneticLinks() {
 
 /** Gentle ease in and out: the content grows and settles instead of snapping open. */
 const DETAILS_EASING = 'cubic-bezier(.4,0,.2,1)';
-const DETAILS_DURATION = 620;
+/** Roughly one pixel per millisecond, never faster than the base time or slower than the limit. */
+const DETAILS_MIN_DURATION = 620;
+const DETAILS_MAX_DURATION = 1400;
 
 /**
  * Opens or closes a <details> by growing its content from zero height (and back), so the card
@@ -77,7 +79,7 @@ function slideDetails(details, content, opening) {
     paddingBottom: style.paddingBottom,
   };
   const animation = content.animate(opening ? [closed, open] : [open, closed], {
-    duration: DETAILS_DURATION,
+    duration: Math.min(DETAILS_MAX_DURATION, Math.max(DETAILS_MIN_DURATION, height)),
     easing: DETAILS_EASING,
   });
   const done = () => {
