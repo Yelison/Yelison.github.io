@@ -3,13 +3,13 @@ import { reduceMotion, state } from './state.js';
 
 const SVG = 'http://www.w3.org/2000/svg';
 /** Concurrent text runs being revealed; further ones simply appear. */
-const MAX_GLOWING_RUNS = 12;
+const MAX_GLOWING_RUNS = 16;
 /** The reveal front moves this many ms per character, and never takes longer than the maximum. */
-const REVEAL_PER_CHARACTER = 28;
-const REVEAL_MAX = 480;
+const REVEAL_PER_CHARACTER = 50;
+const REVEAL_MAX = 800;
 const GLOW_COLOR = '8,232,222';
 /** How long each band of the glow trail lasts, and the whole trail. */
-const GLOW_STEP = 120;
+const GLOW_STEP = 160;
 /** [% of the glow color mixed into the text, glow blur in px, glow alpha], freshest first. */
 const GLOW_BANDS = [
   [100, 8, 0.65],
