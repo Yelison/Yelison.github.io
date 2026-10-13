@@ -105,17 +105,27 @@ function createTracer() {
     // and shown again below if it turns out there is nothing to draw.
     const hiddenAtOnce = el.matches(BIG_CONTAINERS);
     if (hiddenAtOnce) el.classList.add('trace-building');
-    requestAnimationFrame(() => {
+    // A container is written empty, so its size is not known yet: keep trying for a while.
+    let attempts = 0;
+    const attempt = () => {
       // An element can be traced twice (as part of its parent and on its own): the second call
       // finds it already in progress and must not show the border the first one is hiding.
-      if (drawTrace() || traced.has(el)) return;
+      const result = drawTrace();
+      if (result === true || traced.has(el)) return;
+      if (result === 'retry' && attempts++ < 90 && el.isConnected && !state.skipped) {
+        requestAnimationFrame(attempt);
+        return;
+      }
       if (hiddenAtOnce) {
         el.classList.remove('trace-building');
         requestAnimationFrame(() => (el.style.transition = ''));
       }
-    });
+    };
+    requestAnimationFrame(attempt);
     const drawTrace = () => {
-      if (!el.isConnected || state.skipped || !isBuildVisible(el)) return false;
+      if (!el.isConnected || state.skipped) return false;
+      // Not rendered yet (a <details> without its <summary>, for example): try again shortly.
+      if (!isBuildVisible(el)) return hiddenAtOnce ? 'retry' : false;
       if (traced.has(el)) return false;
       // The border has to be measured as the page styles it, not as hidden by the class
       // added above; the class goes back on below, within the same frame.
@@ -124,7 +134,12 @@ function createTracer() {
         el.classList.remove('trace-building');
       }
       const box = el.getBoundingClientRect();
-      if (box.width < 2 || box.height < 2) return;
+      if (box.width < 2 || box.height < 2) {
+        if (!hiddenAtOnce) return false;
+        el.classList.add('trace-building');
+        el.style.transition = '';
+        return 'retry';
+      }
       const toolkitRow = el.closest('.tech-row');
       if (toolkitRow) {
         const row = toolkitRow.getBoundingClientRect();
@@ -431,6 +446,21 @@ export function installDrawing() {
           continue;
         const textWalker = doc.createTreeWalker(node, NodeFilter.SHOW_TEXT);
         while (textWalker.nextNode()) glowText(textWalker.currentNode);
+        // A summary brings its own marker, which would show before its text does: it appears
+        // when the reveal front gets to it, like the boxes.
+        if (!state.skipped && !reduceMotion.matches) {
+          for (const summary of [node, ...node.querySelectorAll('summary')]) {
+            if (summary.tagName !== 'SUMMARY' || previewed.has(summary)) continue;
+            previewed.add(summary);
+            const appear = summary.animate([{ opacity: 0 }, { opacity: 1 }], {
+              delay: wait,
+              duration: 250,
+              easing: 'ease-out',
+              fill: 'both',
+            });
+            appear.finished.then(() => appear.cancel()).catch(() => {});
+          }
+        }
         trace(node, wait);
         node.querySelectorAll('*').forEach((child) => trace(child, wait));
         if (

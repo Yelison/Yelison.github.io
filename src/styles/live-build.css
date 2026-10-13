@@ -37,6 +37,11 @@ html.live-drawing .trace-building {
   transition: none !important;
 }
 
+/* Until its <summary> is written a <details> shows the browser's own "Details" label. */
+html.live-drawing details:not(:has(> summary)) {
+  visibility: hidden;
+}
+
 /* Decorative loops wait until the page is complete. */
 html.live-drawing .marquee-track,
 html.live-drawing .letter-tiles span,
