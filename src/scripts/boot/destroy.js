@@ -308,6 +308,12 @@ async function returnToLaunchScreen() {
     await entrance.finished.catch(() => {});
   }
   state.running = false;
+  // Focus returns here so keyboard users don't lose their place, but the ring only
+  // belongs to the visitor's own keystrokes, not to a focus the page moved itself.
+  const clearQuietFocus = () => delete ui.launch.dataset.quietFocus;
+  ui.launch.dataset.quietFocus = '';
+  window.addEventListener('keydown', clearQuietFocus, { once: true });
+  ui.launch.addEventListener('blur', clearQuietFocus, { once: true });
   ui.launch.focus({ preventScroll: true });
 }
 

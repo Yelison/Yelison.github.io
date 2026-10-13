@@ -737,6 +737,9 @@ html,
   outline: 1px solid #b6bec3;
   outline-offset: 6px;
 }
+#launch[data-quiet-focus]:focus-visible {
+  outline: none;
+}
 
 #launch-screen .launch-center {
   position: relative;
