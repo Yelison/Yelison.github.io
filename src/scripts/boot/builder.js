@@ -48,10 +48,13 @@ function makeFrame() {
   state.frame = document.createElement('iframe');
   state.frame.title = text('buildingFrameTitle');
   state.frame.allow = 'microphone; autoplay; fullscreen';
+  // The build scrolls the page by itself; the visitor only watches until it finishes.
+  state.frame.style.pointerEvents = 'none';
   ui.stage.replaceChildren(state.frame);
   state.drawingObserver?.disconnect();
   traceLayer.replaceChildren();
   state.holdUntil = 0;
+  scrollRoom = null;
   state.doc = state.frame.contentDocument;
   state.doc.open();
   liveStyles = null;
@@ -69,6 +72,9 @@ function applyChunk(phase, chunk) {
   }
   // JavaScript is only collected; it runs once its whole file has been written.
 }
+
+/** Height of the empty scroll room below the page, measured once per build. */
+let scrollRoom = null;
 
 /** Scrolls the iframe so the node being written stays in view above the console. */
 function followWriting(delta) {
@@ -98,6 +104,13 @@ function followWriting(delta) {
   } else {
     overflow = rect.bottom - win.innerHeight * 0.72;
   }
+  // Never scroll past the end of the real content: the empty room below it exists only
+  // so the document can scroll, and showing it looks like a blank gap under the footer.
+  if (scrollRoom === null) {
+    scrollRoom = parseFloat(win.getComputedStyle(doc.body, '::after').height) || 0;
+  }
+  const contentEnd = doc.documentElement.scrollHeight - scrollRoom;
+  overflow = Math.min(overflow, Math.max(0, contentEnd - win.innerHeight - win.scrollY));
   if (overflow > 1) {
     const step = reduceMotion.matches
       ? overflow
@@ -233,7 +246,10 @@ async function finishBuild(phases, token) {
   rememberBuild();
   if (!state.skipped) await wait(800);
   if (token !== state.run) return;
-  const releaseRoom = () => state.doc.documentElement.classList.remove('build-scroll-room');
+  const releaseRoom = () => {
+    state.doc.documentElement.classList.remove('build-scroll-room');
+    state.frame.style.pointerEvents = '';
+  };
   if (state.frame.contentWindow.scrollY < 2) releaseRoom();
   else {
     state.frame.contentWindow.addEventListener('scrollend', releaseRoom, { once: true });
@@ -279,6 +295,7 @@ export async function build() {
     if (token !== state.run) return;
     stopBuildScrollbar();
     state.running = false;
+    state.frame.style.pointerEvents = '';
     ui.consoleBox.hidden = true;
     ui.error.hidden = false;
     ui.error.querySelector('a').focus();
