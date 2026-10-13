@@ -2,11 +2,14 @@ import liveBuildStyles from '../../styles/live-build.css';
 import { reduceMotion, state } from './state.js';
 
 const SVG = 'http://www.w3.org/2000/svg';
-/** Concurrent text runs being revealed; further ones simply appear. */
-const MAX_GLOWING_RUNS = 80;
+/** Text runs waiting or revealing at once; further ones simply appear. */
+const MAX_GLOWING_RUNS = 400;
 /** The reveal front moves this many ms per character, and never takes longer than the maximum. */
 const REVEAL_PER_CHARACTER = 50;
 const REVEAL_MAX = 800;
+const REVEAL_MIN = 16;
+/** Backlog (ms) at which the reveal runs at half speed, so it never falls far behind the code. */
+const REVEAL_LAG = 400;
 const GLOW_COLOR = '8,232,222';
 /** How long each band of the glow trail lasts, and the whole trail. */
 const GLOW_STEP = 160;
@@ -238,8 +241,8 @@ function createGlow() {
     return color;
   };
   const runs = new Set();
-  // When the previous run of a text node finishes revealing, so chunks reveal in order.
-  const revealedAt = new WeakMap();
+  // One reveal front walks the page in reading order: each run starts when the previous ends.
+  let revealCursor = 0;
   let animationFrame;
 
   const finish = (run) => {
@@ -255,6 +258,7 @@ function createGlow() {
         finish(run);
         continue;
       }
+      if (elapsed < 0) continue;
       // First character that has not been revealed yet, `age` ms ago.
       const front = (age) =>
         run.start +
@@ -298,9 +302,15 @@ function createGlow() {
       range.setEnd(node, previous);
     });
     ranges.forEach((range, i) => layers[i].add(range));
-    const duration = Math.min(REVEAL_MAX, length * REVEAL_PER_CHARACTER);
-    const started = Math.max(performance.now(), revealedAt.get(node) ?? 0);
-    revealedAt.set(node, started + duration);
+    const now = performance.now();
+    const started = Math.max(now, revealCursor);
+    // The longer the queue, the faster the front moves, so the text keeps up with the code.
+    const speed = 1 / (1 + (started - now) / REVEAL_LAG);
+    const duration = Math.max(
+      REVEAL_MIN,
+      Math.min(REVEAL_MAX, length * REVEAL_PER_CHARACTER * speed),
+    );
+    revealCursor = started + duration;
     runs.add({
       node,
       start: previous,
