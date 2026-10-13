@@ -2,9 +2,22 @@ import liveBuildStyles from '../../styles/live-build.css';
 import { reduceMotion, state } from './state.js';
 
 const SVG = 'http://www.w3.org/2000/svg';
-const GLOW_DURATION = 550;
-const MAX_GLOWING_RUNS = 40;
-const GLOW_COLOR = [8, 232, 222];
+/** Concurrent text runs being revealed; further ones simply appear. */
+const MAX_GLOWING_RUNS = 12;
+/** The reveal front moves this many ms per character, and never takes longer than the maximum. */
+const REVEAL_PER_CHARACTER = 28;
+const REVEAL_MAX = 480;
+const GLOW_COLOR = '8,232,222';
+/** How long each band of the glow trail lasts, and the whole trail. */
+const GLOW_STEP = 120;
+/** [% of the glow color mixed into the text, glow blur in px, glow alpha], freshest first. */
+const GLOW_BANDS = [
+  [100, 8, 0.65],
+  [65, 6, 0.45],
+  [35, 3, 0.25],
+  [12, 0, 0],
+];
+const GLOW_TRAIL = GLOW_STEP * GLOW_BANDS.length;
 
 /** Overlay in the launcher where element borders are traced while the page is written. */
 export const traceLayer = document.createElement('div');
@@ -178,7 +191,12 @@ function createTracer() {
   };
 }
 
-/** Newly written letters glow cyan and fade to their final color (CSS Custom Highlight API). */
+/**
+ * Newly written text is revealed from left to right while a cyan glow trails behind the
+ * reveal front and fades out (CSS Custom Highlight API). Every frame only moves the
+ * boundaries of a few ranges: the rules below are written once, so the iframe is not
+ * restyled each frame.
+ */
 function createGlow() {
   const { doc, frame } = state;
   const letterLengths = new WeakMap();
@@ -186,30 +204,68 @@ function createGlow() {
   const HighlightClass = frame.contentWindow.Highlight;
   const glowStyle = doc.createElement('style');
   doc.head.append(glowStyle);
-  const glowing = new Set();
+  // The text under the reveal is hidden by one shared highlight. The trail behind it needs
+  // the text's own color to fade into (currentcolor does not resolve inside a highlight),
+  // so each distinct color gets its own set of bands, created the first time it is seen.
+  const hiddenLayer = new HighlightClass();
+  highlights.set('build-hidden', hiddenLayer);
+  glowStyle.textContent = '::highlight(build-hidden){color:transparent;text-shadow:none}';
+  const trails = new Map();
+  const trailFor = (color) => {
+    let trail = trails.get(color);
+    if (!trail) {
+      const id = trails.size;
+      trail = GLOW_BANDS.map(([mix, blur, alpha], i) => {
+        const name = `build-trail-${id}-${i}`;
+        const highlight = new HighlightClass();
+        highlights.set(name, highlight);
+        glowStyle.append(
+          `::highlight(${name}){color:color-mix(in srgb,rgb(${GLOW_COLOR}) ${mix}%,${color});text-shadow:0 0 ${blur}px rgba(${GLOW_COLOR},${alpha})}`,
+        );
+        return highlight;
+      });
+      trails.set(color, trail);
+    }
+    return trail;
+  };
+  const colors = new WeakMap();
+  const colorOf = (element) => {
+    let color = colors.get(element);
+    if (!color) {
+      color = frame.contentWindow.getComputedStyle(element).color;
+      colors.set(element, color);
+    }
+    return color;
+  };
+  const runs = new Set();
   let animationFrame;
-  let glyphId = 0;
+
+  const finish = (run) => {
+    run.layers.forEach((layer, i) => layer.delete(run.ranges[i]));
+    runs.delete(run);
+  };
 
   const paint = () => {
     const now = performance.now();
-    const rules = [];
-    for (const glyph of glowing) {
-      if (!glyph.node.isConnected || state.skipped || now >= glyph.until) {
-        highlights.delete(glyph.name);
-        glowing.delete(glyph);
+    for (const run of runs) {
+      const elapsed = now - run.started;
+      if (!run.node.isConnected || state.skipped || elapsed >= run.duration + GLOW_TRAIL) {
+        finish(run);
         continue;
       }
-      const progress = Math.min(1, (now - glyph.started) / GLOW_DURATION);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const rgb = GLOW_COLOR.map((value, i) =>
-        Math.round(value + (glyph.color[i] - value) * eased),
-      );
-      rules.push(
-        `::highlight(${glyph.name}){color:rgb(${rgb.join(',')});text-shadow:0 0 ${8 * (1 - eased)}px rgba(8,232,222,${0.65 * (1 - eased)})}`,
-      );
+      // First character that has not been revealed yet, `age` ms ago.
+      const front = (age) =>
+        run.start +
+        Math.floor(Math.min(1, Math.max(0, (elapsed - age) / run.duration)) * run.length);
+      const edges = [front(0), ...GLOW_BANDS.map((band, i) => front((i + 1) * GLOW_STEP))];
+      run.ranges[0].setStart(run.node, edges[0]);
+      run.ranges[0].setEnd(run.node, run.end);
+      GLOW_BANDS.forEach((band, i) => {
+        run.ranges[i + 1].setStart(run.node, edges[i + 1]);
+        run.ranges[i + 1].setEnd(run.node, edges[i]);
+      });
     }
-    glowStyle.textContent = rules.join('\n');
-    animationFrame = glowing.size ? requestAnimationFrame(paint) : null;
+    animationFrame = runs.size ? requestAnimationFrame(paint) : null;
   };
 
   return function glowText(node) {
@@ -227,18 +283,29 @@ function createGlow() {
     const text = node.textContent;
     const previous = letterLengths.get(node) || 0;
     letterLengths.set(node, text.length);
-    if (text.length <= previous || !text.slice(previous).trim() || glowing.size >= MAX_GLOWING_RUNS)
+    if (text.length <= previous || !text.slice(previous).trim() || runs.size >= MAX_GLOWING_RUNS)
       return;
-    const style = frame.contentWindow.getComputedStyle(node.parentElement);
-    const range = doc.createRange();
-    range.setStart(node, previous);
-    range.setEnd(node, text.length);
-    if (!range.getBoundingClientRect().width) return;
-    const name = `build-glow-${++glyphId}`;
-    const started = performance.now();
-    highlights.set(name, new HighlightClass(range));
-    const color = (style.color.match(/[\d.]+/g) || [240, 238, 233]).slice(0, 3).map(Number);
-    glowing.add({ node, name, color, started, until: started + GLOW_DURATION });
+    const length = text.length - previous;
+    const layers = [hiddenLayer, ...trailFor(colorOf(node.parentElement))];
+    const ranges = layers.map(() => doc.createRange());
+    // Hidden at once, before the browser paints, so the text never flashes in whole.
+    ranges[0].setStart(node, previous);
+    ranges[0].setEnd(node, text.length);
+    ranges.slice(1).forEach((range) => {
+      range.setStart(node, previous);
+      range.setEnd(node, previous);
+    });
+    ranges.forEach((range, i) => layers[i].add(range));
+    runs.add({
+      node,
+      start: previous,
+      end: text.length,
+      length,
+      layers,
+      ranges,
+      started: performance.now(),
+      duration: Math.min(REVEAL_MAX, length * REVEAL_PER_CHARACTER),
+    });
     if (!animationFrame) animationFrame = requestAnimationFrame(paint);
   };
 }
