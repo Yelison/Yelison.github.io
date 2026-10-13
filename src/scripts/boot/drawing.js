@@ -84,6 +84,9 @@ function clipToToolkitRow(svg, row, box) {
   svg.style.maskRepeat = 'no-repeat';
 }
 
+/** Containers big enough for a one-frame flash of their real border to be noticed. */
+const BIG_CONTAINERS = '.project,.project-visual,.code-window';
+
 function createTracer() {
   const traced = new WeakSet();
 
@@ -95,8 +98,17 @@ function createTracer() {
     if (state.skipped || reduceMotion.matches || traced.has(el)) return;
     const small = el.matches('header,.letter-tiles span,.button,.tech-badge');
     const duration = small ? 180 : 360;
+    // The real border and background are only hidden from the next frame on, which let a big
+    // container flash for one frame before it was drawn. These are hidden at once instead,
+    // and shown again below if it turns out there is nothing to draw.
+    const hiddenAtOnce = el.matches(BIG_CONTAINERS);
+    if (hiddenAtOnce) el.classList.add('trace-building');
     requestAnimationFrame(() => {
-      if (!el.isConnected || state.skipped || !isBuildVisible(el)) return;
+      if (drawTrace()) return;
+      if (hiddenAtOnce) el.classList.remove('trace-building');
+    });
+    const drawTrace = () => {
+      if (!el.isConnected || state.skipped || !isBuildVisible(el)) return false;
       const box = el.getBoundingClientRect();
       if (box.width < 2 || box.height < 2) return;
       const toolkitRow = el.closest('.tech-row');
@@ -194,7 +206,8 @@ function createTracer() {
           el.classList.remove('trace-building');
           svg.remove();
         });
-    });
+      return true;
+    };
   };
 }
 
