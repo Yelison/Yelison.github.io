@@ -17,11 +17,32 @@ export function initTraceLayer() {
 
 /**
  * True when the element is actually rendered (not in a closed details/dialog, not hidden).
- * A single native check: walking the ancestors with getComputedStyle forced a style
- * recalculation after every node written into the iframe.
+ * checkVisibility() answers in one native call; walking the ancestors with getComputedStyle
+ * forced a style recalculation after every node written into the iframe. Browsers without
+ * it (Safari before 17.4, for example) fall back to the walk, since the build effects
+ * would otherwise never run.
  */
 function isBuildVisible(el) {
-  return !!el?.checkVisibility({ contentVisibilityAuto: true, visibilityProperty: true });
+  if (!el) return false;
+  if (typeof el.checkVisibility === 'function') {
+    return el.checkVisibility({ contentVisibilityAuto: true, visibilityProperty: true });
+  }
+  if (el.closest('[hidden]')) return false;
+  for (let parent = el; parent; parent = parent.parentElement) {
+    if (parent.tagName === 'DETAILS' && !parent.open && parent !== el) {
+      const summary = parent.querySelector(':scope > summary');
+      if (!summary?.contains(el)) return false;
+    }
+    if (parent.tagName === 'DIALOG' && !parent.open) return false;
+    const style = state.frame.contentWindow.getComputedStyle(parent);
+    if (
+      style.display === 'none' ||
+      style.visibility === 'hidden' ||
+      style.contentVisibility === 'hidden'
+    )
+      return false;
+  }
+  return true;
 }
 
 function visibleBorders(style) {
