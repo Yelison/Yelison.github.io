@@ -109,14 +109,20 @@ function createTracer() {
       // An element can be traced twice (as part of its parent and on its own): the second call
       // finds it already in progress and must not show the border the first one is hiding.
       if (drawTrace() || traced.has(el)) return;
-      if (hiddenAtOnce) el.classList.remove('trace-building');
+      if (hiddenAtOnce) {
+        el.classList.remove('trace-building');
+        requestAnimationFrame(() => (el.style.transition = ''));
+      }
     });
     const drawTrace = () => {
       if (!el.isConnected || state.skipped || !isBuildVisible(el)) return false;
       if (traced.has(el)) return false;
       // The border has to be measured as the page styles it, not as hidden by the class
       // added above; the class goes back on below, within the same frame.
-      if (hiddenAtOnce) el.classList.remove('trace-building');
+      if (hiddenAtOnce) {
+        el.style.transition = 'none';
+        el.classList.remove('trace-building');
+      }
       const box = el.getBoundingClientRect();
       if (box.width < 2 || box.height < 2) return;
       const toolkitRow = el.closest('.tech-row');
@@ -160,6 +166,7 @@ function createTracer() {
       svg.append(path);
       traceLayer.append(svg);
       el.classList.add('trace-building');
+      el.style.transition = '';
       state.holdUntil = Math.max(state.holdUntil, performance.now() + (small ? 0 : 50));
 
       // Keep the overlay glued to the element while the iframe scrolls.
