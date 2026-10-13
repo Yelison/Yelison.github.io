@@ -53,7 +53,15 @@ const DETAILS_DURATION = 620;
  */
 function slideDetails(details, content, opening) {
   details.dataset.moving = 'true';
-  if (opening) details.open = true;
+  if (opening) {
+    details.open = true;
+    // Rows that fade and slide in on their own would trail behind the growing content: the
+    // growth itself reveals them.
+    content.querySelectorAll('.reveal:not(.visible)').forEach((row) => {
+      row.style.transition = 'none';
+      row.classList.add('visible');
+    });
+  }
   const style = getComputedStyle(content);
   content.style.overflow = 'hidden';
   const box =
@@ -73,6 +81,7 @@ function slideDetails(details, content, opening) {
     easing: DETAILS_EASING,
   });
   const done = () => {
+    content.querySelectorAll('.reveal').forEach((row) => (row.style.transition = ''));
     content.style.overflow = '';
     if (!opening) details.open = false;
     delete details.dataset.moving;
