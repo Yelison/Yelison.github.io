@@ -1,0 +1,48 @@
+/* A career row expands to show what was done there. */
+.job-details {
+  border-top: 0;
+}
+.job-details > summary {
+  padding: 0 38px 0 0;
+  font-size: inherit;
+}
+.job-details > summary:after {
+  top: -3px;
+  right: 2px;
+}
+.job-details > summary:hover h3 {
+  color: var(--blue);
+}
+.timeline-row h3 {
+  transition: color 0.3s var(--ease);
+}
+.job-details .timeline-description,
+.job-details .role {
+  display: block;
+}
+.job-content {
+  padding-top: 16px;
+}
+.job-list {
+  margin: 0;
+  padding-left: 18px;
+}
+.job-list li {
+  margin-bottom: 9px;
+  padding-left: 2px;
+}
+.job-list li::marker {
+  color: var(--blue);
+}
+.company-link {
+  display: inline-block;
+  margin-top: 14px;
+  font:
+    12px/1.6 'DM Mono',
+    monospace;
+  color: var(--blue);
+  border-bottom: 1px solid currentcolor;
+}
+.company-link:hover {
+  opacity: 0.75;
+}

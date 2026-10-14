@@ -104,5 +104,6 @@
   "viewWork": "Explorar proyectos",
   "workLabel": "01 / PROYECTOS SELECCIONADOS",
   "workspace": "espacio de trabajo / yelisson",
-  "workTitle": "Proyectos seleccionados."
+  "workTitle": "Proyectos seleccionados.",
+  "visitCompany": "Visitar {name}"
 }

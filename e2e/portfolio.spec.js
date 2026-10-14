@@ -12,7 +12,7 @@ test.describe('portfolio page', () => {
     await expect(page).toHaveTitle('Yelisson Rodriguez Ortiz — Desarrollador Full-Stack');
     await expect(page.locator('nav')).toHaveAttribute('aria-label', 'Navegación principal');
     await expect(page.locator('#timeline .role').first()).toHaveText(
-      'Frontend Developer · SaaS educativo · Remoto',
+      'Full-Stack Developer · SaaS educativo · Remoto',
     );
 
     await page.reload();
@@ -124,6 +124,28 @@ test.describe('portfolio page', () => {
     await page.getByText('Explore my experience').click();
     await expect(page.locator('#timeline .timeline-row')).toHaveCount(5);
     await expect(page.locator('#timeline .timeline-row').first()).toBeVisible();
+  });
+
+  test('opens a company to show what was done there, and links to SkoolScout', async ({ page }) => {
+    await setPreferences(page, { 'portfolio-language': 'en' });
+    await page.goto('/portfolio.html');
+    await page.getByText('Explore my experience').click();
+    const row = page.locator('#timeline .timeline-row').first();
+    await expect(row.locator('.timeline-date')).toHaveText('Oct 2024 · Present');
+    const details = row.locator('.job-details');
+    await expect(details).not.toHaveAttribute('open', '');
+    await row.getByRole('heading', { name: 'SkoolScout' }).click();
+    await expect(details).toHaveAttribute('open', '');
+    await expect(row.locator('.job-list li')).toHaveCount(4);
+    await expect(row.locator('.job-list li').first()).toBeVisible();
+    await expect(row.getByRole('link', { name: 'Visit SkoolScout' })).toHaveAttribute(
+      'href',
+      'https://skoolscout.com/meet-the-team',
+    );
+    // Clicks during the opening animation are ignored on purpose: wait for it to end.
+    await expect(details).not.toHaveAttribute('data-moving', 'true');
+    await row.getByRole('heading', { name: 'SkoolScout' }).click();
+    await expect(details).not.toHaveAttribute('open', '');
   });
 
   test('opens and closes a project demo', async ({ page }) => {

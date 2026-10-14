@@ -19,5 +19,6 @@
   "pageTitle": "Yelisson Rodriguez Ortiz — Full-Stack Developer",
   "projectFrameTitle": "{name} — interactive Spanish reading app",
   "themeDark": "Dark",
-  "themeSwitchToDark": "Switch to dark mode"
+  "themeSwitchToDark": "Switch to dark mode",
+  "visitCompany": "Visit {name}"
 }
