@@ -98,6 +98,31 @@ test.describe('live build', () => {
     await expect(page.locator('#build-error')).toBeHidden();
   });
 
+  test('follows the code being written until the visitor scrolls the console', async ({ page }) => {
+    test.slow();
+    await page.goto('/');
+    await page.locator('#launch').click();
+    const code = page.locator('.console-code');
+    const metrics = () =>
+      code.evaluate((el) => ({
+        gap: el.scrollHeight - el.clientHeight - el.scrollTop,
+        room: el.scrollHeight - el.clientHeight,
+      }));
+    await expect.poll(async () => (await metrics()).room, { timeout: 15_000 }).toBeGreaterThan(80);
+    // Left alone, it stays on the line being written.
+    await page.waitForTimeout(500);
+    expect((await metrics()).gap).toBeLessThan(4);
+    // Scrolling the console up stops the following, even while code keeps arriving.
+    const section = await page.locator('#build-status').textContent();
+    await code.hover();
+    await page.mouse.wheel(0, -200);
+    await page.waitForTimeout(800);
+    expect((await metrics()).gap).toBeGreaterThan(40);
+    // The next figure being written follows again.
+    await expect(page.locator('#build-status')).not.toHaveText(section, { timeout: 40_000 });
+    await expect.poll(async () => (await metrics()).gap, { timeout: 10_000 }).toBeLessThan(4);
+  });
+
   test('can be skipped, and returning visitors go straight to the portfolio @webkit', async ({
     page,
   }) => {
