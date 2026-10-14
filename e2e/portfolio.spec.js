@@ -136,7 +136,7 @@ test.describe('portfolio page', () => {
     await expect(details).not.toHaveAttribute('open', '');
     await row.getByRole('heading', { name: 'SkoolScout' }).click();
     await expect(details).toHaveAttribute('open', '');
-    await expect(row.locator('.job-list li')).toHaveCount(5);
+    await expect(row.locator('.job-list li')).toHaveCount(4);
     await expect(row.locator('.job-list li').first()).toBeVisible();
     await expect(row.getByRole('link', { name: 'Visit SkoolScout' })).toHaveAttribute(
       'href',
