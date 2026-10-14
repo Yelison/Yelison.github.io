@@ -252,6 +252,8 @@ function createGlow() {
   const letterLengths = new WeakMap();
   const highlights = frame.contentWindow.CSS?.highlights;
   const HighlightClass = frame.contentWindow.Highlight;
+  // Browsers without the Highlight API (Safari before 17.2) write the text with no glow.
+  if (!highlights || !HighlightClass) return Object.assign(() => {}, { wait: () => 0 });
   const glowStyle = doc.createElement('style');
   doc.head.append(glowStyle);
   // The text under the reveal is hidden by one shared highlight. The trail behind it needs
