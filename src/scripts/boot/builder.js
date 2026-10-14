@@ -26,10 +26,31 @@ export function showExisting() {
   ui.replay.hidden = false;
 }
 
+// The console stays on the line being written until the visitor scrolls it; it follows
+// again at the bottom, or when the next figure (file) starts being written.
+let followCode = true;
+const codeAtBottom = () =>
+  ui.consoleCode.scrollHeight - ui.consoleCode.clientHeight - ui.consoleCode.scrollTop < 4;
+const pauseCodeFollow = () => {
+  followCode = false;
+};
+ui.consoleCode.addEventListener(
+  'wheel',
+  (event) => {
+    if (event.deltaY < 0 || !codeAtBottom()) pauseCodeFollow();
+  },
+  { passive: true },
+);
+ui.consoleCode.addEventListener('touchstart', pauseCodeFollow, { passive: true });
+ui.consoleCode.addEventListener('pointerdown', pauseCodeFollow, { passive: true });
+ui.consoleCode.addEventListener('scroll', () => {
+  if (codeAtBottom()) followCode = true;
+});
+
 /** The console shows the tail of the source that has been applied so far. */
 function updateCode(source) {
   ui.sourceText.textContent = source.slice(-CONSOLE_TAIL);
-  ui.consoleCode.scrollTop = ui.consoleCode.scrollHeight;
+  if (followCode) ui.consoleCode.scrollTop = ui.consoleCode.scrollHeight;
 }
 
 function selectFile(name) {
@@ -160,6 +181,7 @@ function followWriting(delta) {
 /** Types one phase into the iframe at a speed that fits `phase.duration`. Resolves false if cancelled. */
 function playPhase(phase, number, total, token) {
   selectFile(phase.file);
+  followCode = true;
   ui.sourceText.textContent = '';
   ui.status.textContent = phase.label[state.lang];
   if (phase.prelude) applyChunk(phase, phase.prelude);

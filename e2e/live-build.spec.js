@@ -98,6 +98,60 @@ test.describe('live build', () => {
     await expect(page.locator('#build-error')).toBeHidden();
   });
 
+  test('follows the code being written until the visitor scrolls the console', async ({ page }) => {
+    test.slow();
+    await page.goto('/');
+    await page.locator('#launch').click();
+    const code = page.locator('.console-code');
+    const metrics = () =>
+      code.evaluate((el) => ({
+        gap: el.scrollHeight - el.clientHeight - el.scrollTop,
+        room: el.scrollHeight - el.clientHeight,
+      }));
+    // The console slides into its corner first: wait until it stops moving.
+    await expect(page.locator('#build-console.docked')).toBeVisible();
+    let box = await code.boundingBox();
+    await expect
+      .poll(async () => {
+        const next = await code.boundingBox();
+        const still = next.x === box.x && next.y === box.y;
+        box = next;
+        return still;
+      })
+      .toBe(true);
+    // A figure ends by emptying the console, which follows again by design: retry in the next
+    // one if that happens in the middle of the check.
+    const status = page.locator('#build-status');
+    let section = '';
+    let paused = false;
+    for (let attempt = 0; attempt < 3 && !paused; attempt++) {
+      // Each figure starts from an empty console: wait for one with lines to scroll back through.
+      await expect
+        .poll(async () => (await metrics()).room, { timeout: 30_000 })
+        .toBeGreaterThan(80);
+      // Left alone, it stays on the line being written.
+      expect((await metrics()).gap).toBeLessThan(4);
+      section = await status.textContent();
+      // Scrolling the console up stops the following, even while code keeps arriving.
+      await code.hover();
+      await page.mouse.wheel(0, -200);
+      await page.waitForTimeout(250);
+      const now = await status.textContent();
+      if (now !== section) {
+        // The wheel may have landed in the next figure: let that one end too, so the retry
+        // starts from a console nobody has touched.
+        await expect(status).not.toHaveText(now, { timeout: 40_000 });
+        continue;
+      }
+      expect((await metrics()).gap).toBeGreaterThan(40);
+      paused = true;
+    }
+    expect(paused).toBe(true);
+    // The next figure being written follows again.
+    await expect(status).not.toHaveText(section, { timeout: 40_000 });
+    await expect.poll(async () => (await metrics()).gap, { timeout: 10_000 }).toBeLessThan(4);
+  });
+
   test('can be skipped, and returning visitors go straight to the portfolio @webkit', async ({
     page,
   }) => {
