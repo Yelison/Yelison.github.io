@@ -9,7 +9,7 @@ test.describe('portfolio page', () => {
     await page.getByRole('button', { name: 'ES', exact: true }).click();
     await expect(page.locator('html')).toHaveAttribute('lang', 'es');
     await expect(page.locator('nav a').first()).toHaveText('Proyectos');
-    await expect(page).toHaveTitle('Yelisson Ortiz — Desarrollador Full-Stack');
+    await expect(page).toHaveTitle('Yelisson Rodriguez Ortiz — Desarrollador Full-Stack');
     await expect(page.locator('nav')).toHaveAttribute('aria-label', 'Navegación principal');
     await expect(page.locator('#timeline .role').first()).toHaveText(
       'Frontend Developer · SaaS educativo · Remoto',
@@ -112,7 +112,9 @@ test.describe('portfolio page', () => {
     await expect(page.locator('#code-language')).toHaveText('Node.js · API simulation');
     await page.getByRole('button', { name: 'Send GET' }).click();
     await expect(page.locator('.api-status')).toHaveText('200 OK');
-    await expect(page.locator('.api-response')).toContainText('"developer": "Yelisson Ortiz"');
+    await expect(page.locator('.api-response')).toContainText(
+      '"developer": "Yelisson Rodriguez Ortiz"',
+    );
     await page.getByRole('button', { name: 'Frontend' }).click();
     await expect(page.locator('.api-preview')).toBeHidden();
   });
