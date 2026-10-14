@@ -81,8 +81,13 @@ const CLAMP_MIN_HEIGHT = 800;
 /** Height of the empty scroll room below the page, measured once per build. */
 let scrollRoom = null;
 
-/** Time (seconds) the follow-scroll takes to settle on a new target. */
+/**
+ * Time (seconds) the follow-scroll takes to settle on a new target. On small screens the
+ * console leaves little room above it, so the scroll must keep up or the text being
+ * written ends up hidden behind the console.
+ */
 const SCROLL_SMOOTH_TIME = 0.4;
+const SCROLL_SMOOTH_TIME_SMALL = 0.1;
 let scrollPosition = null;
 let scrollVelocity = 0;
 
@@ -137,7 +142,10 @@ function followWriting(delta) {
   }
   const target = win.scrollY + Math.max(0, overflow);
   const seconds = delta / 1000;
-  const omega = 2 / SCROLL_SMOOTH_TIME;
+  const smoothTime = matchMedia('(max-width:700px)').matches
+    ? SCROLL_SMOOTH_TIME_SMALL
+    : SCROLL_SMOOTH_TIME;
+  const omega = 2 / smoothTime;
   const x = omega * seconds;
   const decay = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x);
   const change = scrollPosition - target;
