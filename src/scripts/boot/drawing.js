@@ -411,8 +411,17 @@ export function installDrawing() {
           !element.closest('style,script,head') &&
           isBuildVisible(element) &&
           element.getClientRects().length
-        )
-          state.focusNode = node;
+        ) {
+          // The text is revealed after the code that wrote it, so the scroll follows the
+          // reveal front: following the insertion would leave the revealed text above the
+          // screen and show only text that has not appeared yet.
+          const follow = () => {
+            if (!state.skipped && node.isConnected) state.focusNode = node;
+          };
+          const delay = glowText.wait();
+          if (delay > 0 && !reduceMotion.matches) setTimeout(follow, delay);
+          else follow();
+        }
         // Once the code leaves a card, its preview can appear after the text queued so far.
         const owner = element?.closest('.project');
         for (const preview of pendingPreviews) {
