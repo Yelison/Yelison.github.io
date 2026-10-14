@@ -77,6 +77,27 @@ test.describe('live build', () => {
     await expect(page.locator('#replay')).toHaveText('Destroy');
   });
 
+  test('still builds in browsers without the CSS Custom Highlight API', async ({ page }) => {
+    // Safari before 17.2 (older iPads) has no Highlight class or CSS.highlights.
+    await page.addInitScript(() => {
+      // The portfolio is written into an iframe: strip the APIs from its window as it appears.
+      new MutationObserver((records) => {
+        for (const { addedNodes } of records) {
+          for (const node of addedNodes) {
+            const win = node.nodeName === 'IFRAME' ? node.contentWindow : null;
+            if (!win) continue;
+            delete win.Highlight;
+            delete win.CSS.highlights;
+          }
+        }
+      }).observe(document, { childList: true, subtree: true });
+    });
+    await page.goto('/');
+    await page.locator('#launch').click();
+    await expect(page.locator('#source-text')).toContainText('<header>', { timeout: 15_000 });
+    await expect(page.locator('#build-error')).toBeHidden();
+  });
+
   test('can be skipped, and returning visitors go straight to the portfolio @webkit', async ({
     page,
   }) => {
