@@ -171,7 +171,7 @@ export const apiSource = `app.get("/api/projects", (req, res) => {
     developer: "Yelisson Rodriguez Ortiz",
     role: "Full-Stack Developer",
     projects: [
-      { name: "Silabín", stack: "Next.js" }
+      { name: "Resolve", stack: "Spring Boot" }
     ]
   });
 });`;

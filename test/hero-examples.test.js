@@ -53,7 +53,7 @@ describe('hero code examples', () => {
     assert.deepEqual(JSON.parse(responseBody()), {
       developer: 'Yelisson Rodriguez Ortiz',
       role: 'Full-Stack Developer',
-      projects: [{ name: 'Silabín', stack: 'Next.js' }],
+      projects: [{ name: 'Resolve', stack: 'Spring Boot' }],
     });
   });
 });
