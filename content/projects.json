@@ -96,35 +96,6 @@
     "visible": true
   },
   {
-    "id": "silabin",
-    "name": "Silabín",
-    "label": {
-      "en": "PERSONAL PROJECT · INTERACTIVE DEMO",
-      "es": "PROYECTO PERSONAL · DEMO INTERACTIVA"
-    },
-    "description": {
-      "en": "Practice letters and syllables through guided reading exercises.",
-      "es": "Practicar letras y sílabas mediante ejercicios guiados de lectura."
-    },
-    "technologies": ["Next.js", "TypeScript"],
-    "demo": {
-      "url": "https://silabin-ljtp8ckdq-yelison1s-projects.vercel.app/",
-      "enabled": true
-    },
-    "links": [
-      {
-        "label": {
-          "en": "View source on GitHub",
-          "es": "Ver código en GitHub"
-        },
-        "url": "https://github.com/Yelison/silabin",
-        "primary": false
-      }
-    ],
-    "className": "project reveal",
-    "visible": true
-  },
-  {
     "id": "leocontigo",
     "name": "LeoContigo",
     "label": {
