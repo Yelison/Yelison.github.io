@@ -73,7 +73,7 @@ describe('build', () => {
     assert.match(spanish, /aria-label="Navegación principal"/);
     assert.match(
       live.phases[0].source.es,
-      /<title>Yelisson Ortiz — Desarrollador Full-Stack<\/title>/,
+      /<title>Yelisson Rodriguez Ortiz — Desarrollador Full-Stack<\/title>/,
     );
   });
 

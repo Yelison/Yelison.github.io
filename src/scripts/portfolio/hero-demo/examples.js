@@ -168,7 +168,7 @@ export const cycle = [0, 1, 2, 2, 1, 0];
 /** Node.js endpoint typed in "Backend" mode; the response panel shows what it returns. */
 export const apiSource = `app.get("/api/projects", (req, res) => {
   res.json({
-    developer: "Yelisson Ortiz",
+    developer: "Yelisson Rodriguez Ortiz",
     role: "Full-Stack Developer",
     projects: [
       { name: "Silabín", stack: "Next.js" }

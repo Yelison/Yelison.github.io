@@ -29,7 +29,7 @@ export function liveDocumentHead({ lang, title }) {
     '<meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width,initial-scale=1">',
     '<meta name="theme-color" content="#111216">',
-    '<meta name="description" content="Full-Stack Developer — Yelisson Ortiz">',
+    '<meta name="description" content="Full-Stack Developer — Yelisson Rodriguez Ortiz">',
     `<title>${title}</title>`,
     '</head>',
     '<body>',

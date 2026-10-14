@@ -51,7 +51,7 @@ describe('hero code examples', () => {
   it('the simulated API answers with the object passed to res.json', () => {
     assert.match(apiSource, /^app\.get\("\/api\/projects"/);
     assert.deepEqual(JSON.parse(responseBody()), {
-      developer: 'Yelisson Ortiz',
+      developer: 'Yelisson Rodriguez Ortiz',
       role: 'Full-Stack Developer',
       projects: [{ name: 'Silabín', stack: 'Next.js' }],
     });
