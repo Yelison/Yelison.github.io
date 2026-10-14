@@ -2,16 +2,34 @@
   {
     "company": "SkoolScout",
     "date": {
-      "en": "Oct 2024 · Latest role",
-      "es": "Oct 2024 · Puesto más reciente"
+      "en": "Oct 2024 · Present",
+      "es": "Oct 2024 · Presente"
     },
     "role": {
-      "en": "Frontend Developer · EdTech SaaS · Remote",
-      "es": "Frontend Developer · SaaS educativo · Remoto"
+      "en": "Full-Stack Developer · EdTech SaaS · Remote",
+      "es": "Full-Stack Developer · SaaS educativo · Remoto"
     },
     "description": {
-      "en": "Design-token automation, shared testing infrastructure and reusable delivery workflows. Frontend ownership with contributions to the Spring Boot API.",
-      "es": "Automatización de tokens de diseño, infraestructura compartida de pruebas y flujos de entrega reutilizables. Desarrollo frontend con contribuciones a la API de Spring Boot."
+      "en": "Design-token automation, shared testing infrastructure and reusable delivery workflows across the React frontend and the Spring Boot API.",
+      "es": "Automatización de tokens de diseño, infraestructura compartida de pruebas y flujos de entrega reutilizables en el frontend React y la API de Spring Boot."
+    },
+    "url": "https://skoolscout.com/meet-the-team",
+    "site": "skoolscout.com",
+    "details": {
+      "en": [
+        "Built an AI-assisted design-token pipeline: Figma variables (color, spacing, typography) flow through MCP straight into the TypeScript components, so design changes no longer get lost on the way to code.",
+        "Set up a shared, typed mock layer (TanStack Query v5 + MSW) used by Storybook, Vitest and Playwright alike; the full E2E suite now runs on every pull request.",
+        "Wrote reusable GitHub Actions workflows for builds, functional tests and security scans.",
+        "Added Storybook 10 visual baselines and usage docs to each component.",
+        "Ship features end to end on the Spring Boot (Java) API: controllers, services, DAOs, Flyway migrations and JaCoCo coverage."
+      ],
+      "es": [
+        "Construí un flujo de tokens de diseño asistido por IA: las variables de Figma (color, espaciado, tipografía) llegan por MCP directo a los componentes TypeScript, así los cambios de diseño ya no se pierden en el camino al código.",
+        "Armé una capa de mocks tipada y compartida (TanStack Query v5 + MSW) que usan Storybook, Vitest y Playwright por igual; la suite E2E completa corre ahora en cada pull request.",
+        "Escribí workflows reutilizables de GitHub Actions para builds, pruebas funcionales y análisis de seguridad.",
+        "Añadí baselines visuales de Storybook 10 y documentación de uso a cada componente.",
+        "Entrego funcionalidades de punta a punta en la API de Spring Boot (Java): controladores, servicios, DAOs, migraciones Flyway y cobertura con JaCoCo."
+      ]
     }
   },
   {
@@ -27,6 +45,18 @@
     "description": {
       "en": "Refactored component architecture and data flow, built a reusable React + Redux library and delivered authenticated Node.js endpoints backed by MySQL.",
       "es": "Refactoricé la arquitectura de componentes y el flujo de datos, desarrollé una biblioteca React + Redux y endpoints autenticados en Node.js con MySQL."
+    },
+    "details": {
+      "en": [
+        "Refactored a legacy component hierarchy and data flow, improving scalability and performance.",
+        "Built a reusable React + Redux component library adopted across the app.",
+        "Designed and shipped authenticated Node.js REST endpoints backed by MySQL."
+      ],
+      "es": [
+        "Refactoricé una jerarquía de componentes y un flujo de datos heredados, mejorando la escalabilidad y el rendimiento.",
+        "Desarrollé una biblioteca de componentes React + Redux adoptada en toda la aplicación.",
+        "Diseñé y entregué endpoints REST autenticados en Node.js con MySQL."
+      ]
     }
   },
   {
@@ -42,6 +72,18 @@
     "description": {
       "en": "Built the React interface and optimized Django pagination, caching and queries. Consolidated public data portals through a Python + Selenium pipeline.",
       "es": "Desarrollé la interfaz React y optimicé paginación, caché y consultas en Django. Unifiqué portales de datos públicos mediante un flujo de Python + Selenium."
+    },
+    "details": {
+      "en": [
+        "Built a Python + Selenium pipeline that merged several public data portals into one searchable dataset.",
+        "Tuned pagination, caching and queries in the Django backend.",
+        "Built the React interface for searching that data."
+      ],
+      "es": [
+        "Construí un flujo en Python + Selenium que unificó varios portales de datos públicos en un solo conjunto consultable.",
+        "Optimicé la paginación, el caché y las consultas del backend en Django.",
+        "Desarrollé la interfaz React para buscar esos datos."
+      ]
     }
   },
   {
@@ -57,6 +99,18 @@
     "description": {
       "en": "Reduced code duplication by approximately 40% through reusable components. Integrated payment providers, webhook validation and route-level internationalization.",
       "es": "Reduje la duplicación de código aproximadamente un 40% con componentes reutilizables. Integré proveedores de pago, validación de webhooks e internacionalización por rutas."
+    },
+    "details": {
+      "en": [
+        "Cut code duplication by about 40% by rebuilding the component architecture around reusable SASS-styled primitives (React, Redux, Material UI).",
+        "Integrated checkout, webhooks and reconciliation across multiple payment providers.",
+        "Added route-level internationalization (i18n) without forking the app."
+      ],
+      "es": [
+        "Reduje la duplicación de código en cerca de un 40% al rehacer la arquitectura de componentes con primitivas reutilizables con estilos SASS (React, Redux, Material UI).",
+        "Integré checkout, webhooks y conciliación con varios proveedores de pago.",
+        "Añadí internacionalización por rutas (i18n) sin bifurcar la aplicación."
+      ]
     }
   },
   {
@@ -72,6 +126,16 @@
     "description": {
       "en": "Automated a manual payroll process with a generator integrated with the Zoho API, a React interface and Docker deployment.",
       "es": "Automaticé un proceso manual de nómina con un generador integrado con la API de Zoho, una interfaz React y despliegue con Docker."
+    },
+    "details": {
+      "en": [
+        "Automated the accounting team's manual payroll with a generator built on the Zoho API.",
+        "Built the React interface and the Docker deployment."
+      ],
+      "es": [
+        "Automaticé la nómina manual del equipo de contabilidad con un generador sobre la API de Zoho.",
+        "Desarrollé la interfaz en React y el despliegue con Docker."
+      ]
     }
   }
 ]
