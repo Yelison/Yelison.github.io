@@ -1,0 +1,20 @@
+<details>
+  <summary data-i="technicalDetails">Inside the project</summary>
+  <div class="case-content">
+    <h4 data-i="projectProblem">The problem</h4>
+    <p data-i="draftroomProblem">
+      People writing the same document at once need to see each other, trust that their work is saved and keep writing
+      when the connection drops.
+    </p>
+    <h4 data-i="projectContribution">My contribution</h4>
+    <p data-i="draftroomContribution">
+      Built it end to end: the React and Tiptap editor, the Fastify API, the real-time collaboration server over
+      PostgreSQL, the Docker deployment and tests with two real browsers against the real server.
+    </p>
+    <h4 data-i="projectDecision">A technical decision</h4>
+    <p data-i="draftroomDetails">
+      “Synced” means stored: the editor only says it once the server confirms the change is in the database, never
+      because the local copy changed. Edits made offline wait in the browser and are sent when the connection returns.
+    </p>
+  </div>
+</details>

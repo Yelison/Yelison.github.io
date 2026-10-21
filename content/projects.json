@@ -30,6 +30,39 @@
     "visible": false
   },
   {
+    "id": "draftroom",
+    "name": "Draftroom",
+    "label": {
+      "en": "PERSONAL PROJECT · REAL-TIME COLLABORATION",
+      "es": "PROYECTO PERSONAL · COLABORACIÓN EN TIEMPO REAL"
+    },
+    "description": {
+      "en": "A collaborative document editor with live cursors, anchored comments and version history.",
+      "es": "Un editor de documentos colaborativo con cursores en vivo, comentarios anclados e historial de versiones."
+    },
+    "technologies": ["React", "Yjs", "Node.js", "PostgreSQL"],
+    "demo": {
+      "url": "https://yelison.github.io/draftroom/",
+      "enabled": true
+    },
+    "links": [
+      {
+        "label": {
+          "en": "View source on GitHub",
+          "es": "Ver código en GitHub"
+        },
+        "url": "https://github.com/Yelison/draftroom",
+        "primary": false
+      }
+    ],
+    "notice": {
+      "en": "Demo runs on mock data in your browser · The other writer is simulated",
+      "es": "La demo usa datos simulados en tu navegador · La otra persona que escribe es simulada"
+    },
+    "className": "project reveal",
+    "visible": true
+  },
+  {
     "id": "resolve",
     "name": "Resolve",
     "label": {
